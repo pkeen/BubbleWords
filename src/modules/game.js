@@ -72,19 +72,21 @@ class Game {
     }
 
     createHeaderElement = () => {
-        this.header = document.createElement('div');
-        this.header.setAttribute('id', 'header');
-        this.header.style.display = 'flex';
-        this.header.style.justifyContent = 'space-between';
-        this.scoreElement = document.createElement('div');
-        this.header.append(this.scoreElement);
+        this.headerElement = document.createElement('div');
+        this.headerElement.setAttribute('id', 'header');
+        // this.header.style.display = 'flex';
+        // this.header.style.justifyContent = 'space-between';
         this.levelElement = document.createElement('div');
-        this.header.append(this.levelElement);
-        this.gameElement.append(this.header);
+        this.scoreElement = document.createElement('div');
+        this.headerElement.append(this.levelElement, this.scoreElement);
+        // this.header.append(this.scoreElement);
+        // this.header.append(this.levelElement);
+        this.gameElement.append(this.headerElement);
     }
 
     createTimerElement = () => {
         this.timerElement = document.createElement('div');
+        this.timerElement.setAttribute('id', 'timer');
         this.gameElement.append(this.timerElement);
         // dont think i need to init this timer yet
         // this.timer = new CountdownTimer(1000, 10, this.timerParent, () => console.log('stopped timer')); 
@@ -92,19 +94,25 @@ class Game {
     }
 
     createPromptElement = () => {
-        this.promptElement = document.createElement('div');
-        this.promptElement.innerHTML = `--- TYPE THE WORD BELOW ---`;
-        this.gameElement.append(this.promptElement)
+        
+        // this.gameElement.append(this.promptElement)
     }
 
     createTargetWordElement = () => {
+        this.targetElement = document.createElement('div');
+        this.targetElement.setAttribute('id', 'target');
+        this.promptElement = document.createElement('p');
+        this.promptElement.innerHTML = `--- TYPE THE WORD BELOW ---`;
         this.targetWordElement = document.createElement('h3');
+        this.targetElement.append(this.promptElement, this.targetWordElement);
+        this.gameElement.append(this.targetElement);
         // this.targetWordElement.innerHTML = 'hello';
-        this.gameElement.append(this.targetWordElement);
+        // this.gameElement.append(this.targetWordElement);
     }
 
     createTypingDisplayElement = () => {
         this.typingDisplayElement = document.createElement('div');
+        this.typingDisplayElement.setAttribute('id', 'typing');
         this.typingTextElement = document.createElement('h3');
         this.cursorElement = document.createElement('div');
         this.typingDisplayElement.append(this.typingTextElement, this.cursorElement);
@@ -179,7 +187,7 @@ class Game {
             this.pausedElement.style.display = 'block';
             this.gameElement.style.display = 'none';
         } else {
-            this.gameElement.style.display = 'block';
+            this.gameElement.style.display = 'grid';
             this.pausedElement.style.display = 'none';
         }
         // this.render();
@@ -242,10 +250,6 @@ class Game {
     }
     /* End of Gameplay functions */
 
-
-
-
-    
 
 
     init = () => {
