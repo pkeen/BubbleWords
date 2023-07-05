@@ -129,8 +129,8 @@ class Game {
     render = () => {
         this.display.setLayout(this.paused);
         this.display.renderHeader(this.level, this.score);
-        this.display.renderTargetWord(this.targetString)
-        this.display.renderTyping(this.correctlyTyped);
+        this.display.renderTargetWord(this.targetString, this.correctlyTyped);
+        // this.display.renderTyping(this.correctlyTyped);
         this.display.renderPausedMessage(this.score);
     }
 

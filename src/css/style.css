@@ -63,3 +63,8 @@ span {
   animation-delay: .5s;
   padding: 1vh;
 }
+
+#target > h3 > span {
+  color: #83D2F3;
+  text-decoration: underline;
+}

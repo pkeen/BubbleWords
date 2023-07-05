@@ -77,14 +77,24 @@ class Display {
         this.scoreElement.innerHTML = `<p>Score: ${score}</p>`;
     }
 
-    renderTargetWord = (target) => {
-        this.targetWordElement.innerHTML = `${target}`;
+    // render correct in span
+    renderTargetWord = (target, correctlyTyped) => {
+        let renderTarget = ``;
+        for (let i = 0; i < target.length; i++) {
+            if (target[i] === correctlyTyped[i]) {
+                renderTarget += `<span>${target[i]}</span>`
+            } else {
+                renderTarget += target[i];
+            }
+        }
+        console.log(`rendertarget= ${renderTarget}`);
+        this.targetWordElement.innerHTML = `${renderTarget}`;
     }
 
-    // render the typing on screen
-    renderTyping = (correctlyTyped) => {
-        this.typingTextElement.innerHTML = correctlyTyped;
-    }
+    // // render the typing on screen
+    // renderTyping = (correctlyTyped) => {
+    //     this.typingTextElement.innerHTML = correctlyTyped;
+    // }
     
     renderPausedMessage = (score) => {
         if (score > 0) {
