@@ -43,7 +43,7 @@ class CountdownTimer {
         this.render();
         
         if (this.secondsRemaining <= 0) {
-          console.log(this.timeout);
+          // console.log(this.timeout);
           this.stop();
         } else {
           this.timeout = setTimeout(this.round, this.timeInterval - drift);

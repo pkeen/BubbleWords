@@ -1,0 +1,5 @@
+First Job:
+    Extract all the DOM logic out of game class
+    Game class will only contain the information and is not confined to a particular formatting
+
+
