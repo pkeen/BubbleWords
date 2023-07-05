@@ -51,7 +51,7 @@ class Game {
         this.parentElement.append(this.pausedElement);
     }
         
-    createWelcomeElement = () => {
+    createPausedMessageElement = () => {
         // const handleWelcomeKeys = (event) => {
         //     if (event.key) {
         //         this.level = 1;
@@ -60,9 +60,9 @@ class Game {
         //         document.removeEventListener('keydown', handleWelcomeKeys);
         //     }
         // }
-        this.welcomeElement = document.createElement('div');
-        this.welcomeElement.innerHTML = `<h1>Welcome to TikType</h1>`;
-        this.pausedElement.append(this.welcomeElement); // belongs in paused element
+        this.pausedMessageElement = document.createElement('div');
+        // this.welcomeElement.innerHTML = `<h1>Welcome to TikType</h1>`;
+        this.pausedElement.append(this.pausedMessageElement); // belongs in paused element
 
         // add logic for showing different message between rounds
 
@@ -93,11 +93,6 @@ class Game {
         // this.timer.init();
     }
 
-    createPromptElement = () => {
-        
-        // this.gameElement.append(this.promptElement)
-    }
-
     createTargetWordElement = () => {
         this.targetElement = document.createElement('div');
         this.targetElement.setAttribute('id', 'target');
@@ -123,10 +118,9 @@ class Game {
         this.createTemporaryButton();
         this.createGameElement();
         this.createPausedElement();
-        this.createWelcomeElement();
+        this.createPausedMessageElement();
         this.createHeaderElement();
         this.createTimerElement();
-        this.createPromptElement();
         this.createTargetWordElement();
         this.createTypingDisplayElement();
     }
@@ -146,16 +140,16 @@ class Game {
         this.typingTextElement.innerHTML = this.correctlyTyped;
     }
 
-    // renderTimer = () => {
-    //     // this.parentElement.append(this.timerParent);
-    // }
-
-    // renderPrompt = () => {
-    //     // this.parentElement.append(this.prompt);
-    // }
-
     renderTargetWord = () => {
         this.targetWordElement.innerHTML = `${this.targetString}`;
+    }
+
+    renderPausedMessage = () => {
+        if (this.score > 0) {
+            this.pausedMessageElement.innerHTML = `<h1>You scored ${this.score} points!</h1>`;
+        } else {
+            this.pausedMessageElement.innerHTML = `<h1>Welcome to TikType</h1>`
+        }
     }
 
     /* End of render Methods */
@@ -168,18 +162,8 @@ class Game {
         this.renderHeader();
         this.renderTyping();
         this.renderTargetWord();
+        this.renderPausedMessage();
         // this.renderTimer();
-
-        // if (this.level === 0) {
-        //     // this.welcome();
-        // } else {
-        //     this.parentElement.innerHTML = '';
-        //     this.renderHeader();
-        //     this.renderTimer();
-        //     this.timer.start();
-        //     this.renderPrompt();
-        //     this.renderTargetWord();
-        // }
     }
 
     setLayout = () => {
@@ -284,6 +268,7 @@ class Game {
         this.createAllElements();
         this.setLayout();
         this.addKeyboardEventListener();
+        this.setLayout();
         this.render();
         // this.timer = new CountdownTimer(1000, 10, )
         this.startButton.addEventListener('click', this.startNewLevel) // add start round to temporary button
