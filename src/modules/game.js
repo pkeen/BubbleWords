@@ -6,7 +6,7 @@ class Game {
         this.parentElement = parentElement;
         this.level = 0;
         this.score = 0;
-        this.paused = false;
+        this.paused = true;
         this.userChar;
         this.userString = "";
         this.targetChar = 0;
@@ -184,7 +184,7 @@ class Game {
 
     setLayout = () => {
         if (this.paused === true) {
-            this.pausedElement.style.display = 'block';
+            this.pausedElement.style.display = 'flex';
             this.gameElement.style.display = 'none';
         } else {
             this.gameElement.style.display = 'grid';
@@ -220,10 +220,18 @@ class Game {
 
     /* Game play Functions */
 
+    timeUp = () => {
+        this.paused = true;
+        this.setLayout();
+        console.log('You scored: ', this.score);
+    }
+
     testWinner = () => {
         if (this.targetRegEx.test(this.userString)) {
             console.log('winner!')
-            this.timer.stop();
+            this.startNewRound();
+            this.score += 100;
+            this.render();
         }
     }
     
@@ -240,13 +248,32 @@ class Game {
             this.setLayout();
         }
         this.getNewTargetWord();
+
+        this.userString = "";
+        this.targetChar = 0;
+        this.correctlyTyped = "";
+        // if (this.timer) {
+        //     this.timer.stop(); // if its running
+        // }
+        
+        // this.timer.init();
+        // this.timer.start();
+        this.render();
+    }
+
+    startNewLevel = () => {
+        console.log('level Started');
+        if (this.paused) {
+            this.paused = false;
+            this.setLayout();
+        }
         if (this.timer) {
             this.timer.stop(); // if its running
         }
-        this.timer = new CountdownTimer(1000, 10, this.timerElement, () => console.log('stopped timer')); 
+        this.timer = new CountdownTimer(1000, 20, this.timerElement, this.timeUp); 
         this.timer.init();
+        this.startNewRound();
         this.timer.start();
-        this.render();
     }
     /* End of Gameplay functions */
 
@@ -259,7 +286,7 @@ class Game {
         this.addKeyboardEventListener();
         this.render();
         // this.timer = new CountdownTimer(1000, 10, )
-        this.startButton.addEventListener('click', this.startNewRound) // add start round to temporary button
+        this.startButton.addEventListener('click', this.startNewLevel) // add start round to temporary button
     }
 
 
