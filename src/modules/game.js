@@ -52,23 +52,14 @@ class Game {
     }
         
     createPausedMessageElement = () => {
-        // const handleWelcomeKeys = (event) => {
-        //     if (event.key) {
-        //         this.level = 1;
-        //         console.log(this.level);
-        //         this.render();
-        //         document.removeEventListener('keydown', handleWelcomeKeys);
-        //     }
-        // }
-        this.pausedMessageElement = document.createElement('div');
-        // this.welcomeElement.innerHTML = `<h1>Welcome to TikType</h1>`;
-        this.pausedElement.append(this.pausedMessageElement); // belongs in paused element
-
-        // add logic for showing different message between rounds
-
-        // document.addEventListener('keydown', handleWelcomeKeys);
-
-        // event listener needed
+        this.pausedMessageDiv = document.createElement('div');
+        this.mainPausedMessage = document.createElement('h1');
+        this.subPausedMessage = document.createElement('h3');
+        this.continueMessage = document.createElement('h4');
+        this.continueMessage.setAttribute('id', 'continue');
+       
+        this.pausedMessageDiv.append(this.mainPausedMessage, this.subPausedMessage, this.continueMessage);
+        this.pausedElement.append(this.pausedMessageDiv); // belongs in paused element
     }
 
     createHeaderElement = () => {
@@ -146,10 +137,11 @@ class Game {
 
     renderPausedMessage = () => {
         if (this.score > 0) {
-            this.pausedMessageElement.innerHTML = `<h1>You scored ${this.score} points!</h1>`;
+            this.mainPausedMessage.innerHTML = `You scored ${this.score} points!`;
         } else {
-            this.pausedMessageElement.innerHTML = `<h1>Welcome to TikType</h1>`
+            this.mainPausedMessage.innerHTML = `Welcome to TikType`
         }
+        this.continueMessage.innerHTML = `Press the spacebar to ${this.score ? 'continue' : 'begin'}`
     }
 
     /* End of render Methods */
@@ -182,21 +174,29 @@ class Game {
     addKeyboardEventListener = () => {
           // event listener for keyboard input
         document.addEventListener("keydown", (event) => {
-            this.userChar = event.key;
-            console.log('char: ', this.userChar);
-            this.userString += this.userChar;
-            console.log(this.userString);
-            // logic for displaying so far correctly typed
-            if (this.userChar === this.targetString[this.targetChar]) {
-                this.correctlyTyped += this.userChar
-                this.targetChar++;
+            // If paused we're only listening for the space key
+            if (this.paused) {
+                if(event.code === 'Space') {
+                    this.startNewLevel();
+                }
             } else {
-                this.correctlyTyped = "";
-                this.targetChar = 0;
+                this.userChar = event.key;
+                console.log('char: ', this.userChar);
+                this.userString += this.userChar;
+                console.log(this.userString);
+                // logic for displaying so far correctly typed
+                if (this.userChar === this.targetString[this.targetChar]) {
+                    this.correctlyTyped += this.userChar
+                    this.targetChar++;
+                } else {
+                    this.correctlyTyped = "";
+                    this.targetChar = 0;
+                }
+                console.log(this.userString);
+                this.render();
+                this.testWinner();
             }
-            console.log(this.userString);
-            this.render();
-            this.testWinner();
+
         });
     }
 

@@ -43,8 +43,23 @@ span {
 
 /* paused */
 #paused {
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 100vh;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+@keyframes rise {
+  from {top: 100vh;}
+    to {top: 0;}
+}
+
+#continue {
+  color: #83D2F3;
+  position: relative;
+  animation-name: rise;
+  animation-duration: 1.2s;
+  animation-delay: .5s;
+  padding: 1vh;
 }
