@@ -65,6 +65,7 @@ span {
 }
 
 #target > h3 > span {
-  color: #83D2F3;
+  color: #1BF9A9;
   text-decoration: underline;
+  font-weight: 800;
 }

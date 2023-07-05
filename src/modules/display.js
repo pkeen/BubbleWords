@@ -60,14 +60,14 @@ class Display {
         this.gameElement.append(this.targetElement);
     }
 
-    createTypingDisplayElement = () => {
-        this.typingDisplayElement = document.createElement('div');
-        this.typingDisplayElement.setAttribute('id', 'typing');
-        this.typingTextElement = document.createElement('h3');
-        this.cursorElement = document.createElement('div');
-        this.typingDisplayElement.append(this.typingTextElement, this.cursorElement);
-        this.gameElement.append(this.typingDisplayElement);
-    }
+    // createTypingDisplayElement = () => {
+    //     this.typingDisplayElement = document.createElement('div');
+    //     this.typingDisplayElement.setAttribute('id', 'typing');
+    //     this.typingTextElement = document.createElement('h3');
+    //     this.cursorElement = document.createElement('div');
+    //     this.typingDisplayElement.append(this.typingTextElement, this.cursorElement);
+    //     this.gameElement.append(this.typingDisplayElement);
+    // }
 
 
     //  /* Render methods for elements */
@@ -80,6 +80,7 @@ class Display {
     // render correct in span
     renderTargetWord = (target, correctlyTyped) => {
         let renderTarget = ``;
+
         for (let i = 0; i < target.length; i++) {
             if (target[i] === correctlyTyped[i]) {
                 renderTarget += `<span>${target[i]}</span>`
@@ -87,7 +88,7 @@ class Display {
                 renderTarget += target[i];
             }
         }
-        console.log(`rendertarget= ${renderTarget}`);
+        // console.log(`rendertarget= ${renderTarget}`);
         this.targetWordElement.innerHTML = `${renderTarget}`;
     }
 
@@ -123,7 +124,7 @@ class Display {
         this.createHeaderElement();
         this.createTimerElement();
         this.createTargetWordElement();
-        this.createTypingDisplayElement();
+        // this.createTypingDisplayElement();
     }
 
 }
