@@ -143,15 +143,22 @@ class Display {
     //     const text = ``;
 
     // }
+   adjustToFitX = (x, textWidth, outerCircleRadius) => {
+        // if it exceeds right
+        const rightBoundary = x + (textWidth / 2) + outerCircleRadius
+        const leftBoundary = x + (textWidth / 2) - outerCircleRadius
+        console.log(leftBoundary);
+        if (rightBoundary >= this.gameCanvas.width) {
+          x = x - (rightBoundary - this.gameCanvas.width)
+          console.log(x);
+        } else if (leftBoundary <= 0) {
+          x = x - (leftBoundary)
+        }
+        return x;
+      }
+      
 
-    renderTargetWord = (word) => {
-        // this.ctx.clearRect(0, 0, this.gameCanvas.width, this.gameCanvas.height);
-        // let renderWord = ``;
-        let x = word.x / 100 * this.gameCanvas.width;
-        let y  = word.y / 100 * this.gameCanvas.width;
-        this.ctx.font = "30px Arial";
-        // console.log
-
+    renderWordColors = (word, x, y) => {
         for (let i = 0; i < word.text.length; i++) {
             if (word.text[i] === word.correctlyTyped[i]) {
                 this.ctx.fillStyle = '#1BF9A9';
@@ -162,11 +169,47 @@ class Display {
             }
             x += this.ctx.measureText(word.text[i]).width;
         }
+    }
 
-        this.ctx.fillStyle = "white";
-        // this.ctx.fillStyle = '#1BF9A9'
+    renderBubble = (textWidth, centerX, centerY) => {
+        // vars
         
-        // this.ctx.fillText(word.text, (word.x / 100) * this.gameCanvas.width, (word.y / 100) * this.gameCanvas.height);
+        // draw outer circle
+        this.ctx.beginPath();
+        this.ctx.arc(centerX, centerY, textWidth - textWidth *.2, 0, Math.PI * 2, true);
+        this.ctx.stroke();
+        
+        // draw inner circle
+        this.ctx.beginPath();
+        this.ctx.arc(centerX, centerY, textWidth - textWidth * .3, 0, Math.PI * 2 / 1.5, true) // you could animate that by going through vales from 1.1 to 2 lerp;
+        this.ctx.stroke();
+    }
+    
+    renderBubbleWord = (word) => {
+        // vars
+        let x = word.x / 100 * this.gameCanvas.width; // turning percent to pixel cordinates
+        let y  = word.y / 100 * this.gameCanvas.width;
+        const textMetrics = this.ctx.measureText(word.text); // text measurements object
+        const textWidth = textMetrics.width
+        const outerCircleRadius = textWidth - textWidth *.2;
+        
+        // const textWidth = textMetrics.width;
+        
+        // ctx settings
+        this.ctx.font = "30px Arial";
+        this.ctx.strokeStyle = "white";
+        
+        // adjust to width boundaries
+        x = this.adjustToFitX(x, textWidth, outerCircleRadius);
+        
+        // Color words correctly
+        this.renderWordColors(word, x, y);
+        
+        
+        // Draw bubbles around words
+        const centerX = textMetrics.width / 2 + x; // half of width of text + x position,
+        const centerY = y - textMetrics.fontBoundingBoxDescent;
+        this.renderBubble(textWidth, centerX, centerY);
     }
 
     init = () => {
