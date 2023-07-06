@@ -1,5 +1,11 @@
-First Job:
-    Extract all the DOM logic out of game class
-    Game class will only contain the information and is not confined to a particular formatting
+// First Job:
+//     Extract all the DOM logic out of game class
+//     Game class will only contain the information and is not confined to a particular formatting
+
+//     DONE!
+
+// Second Job:
+
+//     Try to make same game on a canvas
 
 

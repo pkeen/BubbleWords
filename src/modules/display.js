@@ -13,9 +13,12 @@ class Display {
     */
 
     createGameElement = () => {
-        this.gameElement = document.createElement('div');
-        this.gameElement.setAttribute('id', 'game');
-        this.parentElement.append(this.gameElement);
+        this.gameCanvas = document.createElement('canvas');
+        this.gameCanvas.setAttribute('width', document.getElementById('app').clientWidth);
+        this.gameCanvas.setAttribute('height', document.getElementById('app').clientHeight);
+        this.ctx = this.gameCanvas.getContext('2d');
+        this.gameCanvas.setAttribute('id', 'game');
+        this.parentElement.append(this.gameCanvas);
     }
 
     createPausedElement = () => {
@@ -35,85 +38,135 @@ class Display {
         this.pausedElement.append(this.pausedMessageDiv); // belongs in paused element
     }
 
-    createHeaderElement = () => {
-        this.headerElement = document.createElement('div');
-        this.headerElement.setAttribute('id', 'header');
-        this.levelElement = document.createElement('div');
-        this.scoreElement = document.createElement('div');
-        this.headerElement.append(this.levelElement, this.scoreElement);
-        this.gameElement.append(this.headerElement);
-    }
-
-    createTimerElement = () => {
-        this.timerElement = document.createElement('div');
-        this.timerElement.setAttribute('id', 'timer');
-        this.gameElement.append(this.timerElement);
-    }
-
-    createTargetWordElement = () => {
-        this.targetElement = document.createElement('div');
-        this.targetElement.setAttribute('id', 'target');
-        this.promptElement = document.createElement('p');
-        this.promptElement.innerHTML = `--- TYPE THE WORD BELOW ---`;
-        this.targetWordElement = document.createElement('h3');
-        this.targetElement.append(this.promptElement, this.targetWordElement);
-        this.gameElement.append(this.targetElement);
-    }
-
-    // createTypingDisplayElement = () => {
-    //     this.typingDisplayElement = document.createElement('div');
-    //     this.typingDisplayElement.setAttribute('id', 'typing');
-    //     this.typingTextElement = document.createElement('h3');
-    //     this.cursorElement = document.createElement('div');
-    //     this.typingDisplayElement.append(this.typingTextElement, this.cursorElement);
-    //     this.gameElement.append(this.typingDisplayElement);
+    // createHeaderElement = () => {
+    //     this.headerElement = document.createElement('div');
+    //     this.headerElement.setAttribute('id', 'header');
+    //     this.levelElement = document.createElement('div');
+    //     this.scoreElement = document.createElement('div');
+    //     this.headerElement.append(this.levelElement, this.scoreElement);
+    //     this.gameElement.append(this.headerElement);
     // }
 
+    // createTimerElement = () => {
+    //     this.timerElement = document.createElement('div');
+    //     this.timerElement.setAttribute('id', 'timer');
+    //     this.gameElement.append(this.timerElement);
+    // }
 
-    //  /* Render methods for elements */
+    // createTargetWordElement = () => {
+    //     this.targetElement = document.createElement('div');
+    //     this.targetElement.setAttribute('id', 'target');
+    //     this.promptElement = document.createElement('p');
+    //     this.promptElement.innerHTML = `--- TYPE THE WORD BELOW ---`;
+    //     this.targetWordElement = document.createElement('h3');
+    //     this.targetElement.append(this.promptElement, this.targetWordElement);
+    //     this.gameElement.append(this.targetElement);
+    // }
 
-    renderHeader = (level, score) => {
-        this.levelElement.innerHTML = `<p>Level: ${level}</p>`
-        this.scoreElement.innerHTML = `<p>Score: ${score}</p>`;
-    }
+    // // createTypingDisplayElement = () => {
+    // //     this.typingDisplayElement = document.createElement('div');
+    // //     this.typingDisplayElement.setAttribute('id', 'typing');
+    // //     this.typingTextElement = document.createElement('h3');
+    // //     this.cursorElement = document.createElement('div');
+    // //     this.typingDisplayElement.append(this.typingTextElement, this.cursorElement);
+    // //     this.gameElement.append(this.typingDisplayElement);
+    // // }
 
-    // render correct in span
-    renderTargetWord = (target, correctlyTyped) => {
-        let renderTarget = ``;
 
-        for (let i = 0; i < target.length; i++) {
-            if (target[i] === correctlyTyped[i]) {
-                renderTarget += `<span>${target[i]}</span>`
-            } else {
-                renderTarget += target[i];
-            }
-        }
-        // console.log(`rendertarget= ${renderTarget}`);
-        this.targetWordElement.innerHTML = `${renderTarget}`;
-    }
+    // //  /* Render methods for elements */
 
-    // // render the typing on screen
-    // renderTyping = (correctlyTyped) => {
-    //     this.typingTextElement.innerHTML = correctlyTyped;
+    // renderHeader = (level, score) => {
+    //     this.levelElement.innerHTML = `<p>Level: ${level}</p>`
+    //     this.scoreElement.innerHTML = `<p>Score: ${score}</p>`;
+    // }
+
+    // // render correct in span
+    // renderTargetWord = (target, correctlyTyped) => {
+    //     let renderTarget = ``;
+
+    //     for (let i = 0; i < target.length; i++) {
+    //         if (target[i] === correctlyTyped[i]) {
+    //             renderTarget += `<span>${target[i]}</span>`
+    //         } else {
+    //             renderTarget += target[i];
+    //         }
+    //     }
+    //     // console.log(`rendertarget= ${renderTarget}`);
+    //     this.targetWordElement.innerHTML = `${renderTarget}`;
+    // }
+
+    // // // render the typing on screen
+    // // renderTyping = (correctlyTyped) => {
+    // //     this.typingTextElement.innerHTML = correctlyTyped;
+    // // }
+    
+    // renderPausedMessage = (score) => {
+    //     if (score > 0) {
+    //         this.mainPausedMessage.innerHTML = `You scored ${score} points!`;
+    //     } else {
+    //         this.mainPausedMessage.innerHTML = `Welcome to TikType`
+    //     }
+    //     this.continueMessage.innerHTML = `Press the spacebar to ${score ? 'continue' : 'begin'}`
+    // }
+
+    // setLayout = (paused) => {
+    //     if (paused === true) {
+    //         this.pausedElement.style.display = 'flex';
+    //         this.gameElement.style.display = 'none';
+    //     } else {
+    //         this.gameElement.style.display = 'grid';
+    //         this.pausedElement.style.display = 'none';
+    //     }
     // }
     
-    renderPausedMessage = (score) => {
-        if (score > 0) {
-            this.mainPausedMessage.innerHTML = `You scored ${score} points!`;
-        } else {
-            this.mainPausedMessage.innerHTML = `Welcome to TikType`
-        }
-        this.continueMessage.innerHTML = `Press the spacebar to ${score ? 'continue' : 'begin'}`
-    }
+    // renderOtherThing = () => {
+    //     const data = `
+    //         <svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'>
+    //         <foreignObject width='100%' height='100%'>
+    //             <div xmlns='http://www.w3.org/1999/xhtml' style='font-size:40px'>
+    //             <em>I</em> like <span style='color:white; text-shadow:0 0 2px blue;'>CANVAS</span>
+    //             </div>
+    //         </foreignObject>
+    //         </svg>
+    //         `;
+    //     const img = new Image();
+    //     const svg = new Blob([data], {type: "image/svg+xml;charset=utf-8"});
+    //     const url = URL.createObjectURL(svg);
+    //     img.onload = () => {
+    //         this.ctx.drawImage(img, 0, 0);
+    //         URL.revokeObjectURL(url);
+    //     };
+    //     img.src = url;
+    // }
 
-    setLayout = (paused) => {
-        if (paused === true) {
-            this.pausedElement.style.display = 'flex';
-            this.gameElement.style.display = 'none';
-        } else {
-            this.gameElement.style.display = 'grid';
-            this.pausedElement.style.display = 'none';
+    // renderColoredText = () => {
+    //     const text = ``;
+
+    // }
+
+    renderTargetWord = (word) => {
+        // this.ctx.clearRect(0, 0, this.gameCanvas.width, this.gameCanvas.height);
+        // let renderWord = ``;
+        let x = word.x / 100 * this.gameCanvas.width;
+        let y  = word.y / 100 * this.gameCanvas.width;
+        this.ctx.font = "30px Arial";
+        // console.log
+
+        for (let i = 0; i < word.text.length; i++) {
+            if (word.text[i] === word.correctlyTyped[i]) {
+                this.ctx.fillStyle = '#1BF9A9';
+                this.ctx.fillText(word.text[i], x, y);
+            } else {
+                this.ctx.fillStyle = "white";
+                this.ctx.fillText(word.text[i], x, y);
+            }
+            x += this.ctx.measureText(word.text[i]).width;
         }
+
+        this.ctx.fillStyle = "white";
+        // this.ctx.fillStyle = '#1BF9A9'
+        
+        // this.ctx.fillText(word.text, (word.x / 100) * this.gameCanvas.width, (word.y / 100) * this.gameCanvas.height);
     }
 
     init = () => {
@@ -121,9 +174,9 @@ class Display {
         this.createGameElement();
         this.createPausedElement();
         this.createPausedMessageElement();
-        this.createHeaderElement();
-        this.createTimerElement();
-        this.createTargetWordElement();
+        // this.createHeaderElement();
+        // this.createTimerElement();
+        // this.createTargetWordElement();
         // this.createTypingDisplayElement();
     }
 
