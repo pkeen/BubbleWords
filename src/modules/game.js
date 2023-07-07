@@ -96,6 +96,15 @@ class Game {
 
 /* === GAME LOGIC FUNCTIONS === */
 
+    calculateScore = (text) => {
+        let wordScore = text.length * 50;
+        this.score += wordScore;
+    }
+
+    popWord = (index) => {
+        this.bubbleMachine.words.splice(index, 1);
+    }
+
     timeUp = () => {
         this.paused = true;
         console.log(this.score - this.scoreBeforeRound)
@@ -109,9 +118,10 @@ class Game {
     }
 
     testMatch = () => {
-        this.bubbleMachine.words.forEach(word => {
+        this.bubbleMachine.words.forEach((word, index, array) => {
             if (word.regExp.test(this.userString)) {
-                console.log('Winner!!');
+                this.calculateScore(word.text);
+                this.popWord(index);
             }
         })
     }
@@ -169,9 +179,9 @@ class Game {
     renderWords = () => {
         this.bubbleMachine.words.forEach(word => {
             this.display.renderBubbleWord(word);
-            word.y += word.speed / 10;
-            if (word.y >= 100) {
-                word.y = 0; 
+            word.y -= word.speed / 5;
+            if (word.y <= 0) {
+                word.y = 100; 
             };
         })
     }
@@ -191,9 +201,9 @@ class Game {
         // this.display.setLayout(this.paused);
         // this.display.startButton.addEventListener('click', this.startNewLevel) // add start round to temporary button
         // console.log(this.words);
-        this.bubbleMachine = new BubbleMachine(1000);
+        this.bubbleMachine = new BubbleMachine(1500);
         this.bubbleMachine.start();
-        this.bubbleMachine.words.push(new Word(WORDLIST[Math.floor(Math.random() * WORDLIST.length)]));
+        // this.bubbleMachine.words.push(new Word(WORDLIST[Math.floor(Math.random() * WORDLIST.length)]));
         this.render();
     }
 

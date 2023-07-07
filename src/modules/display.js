@@ -147,10 +147,8 @@ class Display {
         // if it exceeds right
         const rightBoundary = x + (textWidth / 2) + outerCircleRadius
         const leftBoundary = x + (textWidth / 2) - outerCircleRadius
-        console.log(leftBoundary);
         if (rightBoundary >= this.gameCanvas.width) {
           x = x - (rightBoundary - this.gameCanvas.width)
-          console.log(x);
         } else if (leftBoundary <= 0) {
           x = x - (leftBoundary)
         }
@@ -188,7 +186,7 @@ class Display {
     renderBubbleWord = (word) => {
         // vars
         let x = word.x / 100 * this.gameCanvas.width; // turning percent to pixel cordinates
-        let y  = word.y / 100 * this.gameCanvas.width;
+        let y  = word.y / 100 * this.gameCanvas.height;
         const textMetrics = this.ctx.measureText(word.text); // text measurements object
         const textWidth = textMetrics.width
         const outerCircleRadius = textWidth - textWidth *.2;
