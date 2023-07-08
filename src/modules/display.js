@@ -156,6 +156,48 @@ class Display {
       }
       
 
+      
+      // renderBubble = (textWidth, centerX, centerY) => {
+          //     // vars
+          
+          //     // draw outer circle
+          //     this.ctx.beginPath();
+          //     this.ctx.arc(centerX, centerY, textWidth - textWidth *.2, 0, Math.PI * 2, true);
+          //     this.ctx.stroke();
+          
+          //     // draw inner circle
+          //     this.ctx.beginPath();
+          //     this.ctx.arc(centerX, centerY, textWidth - textWidth * .3, 0, Math.PI * 2 / 1.5, true) // you could animate that by going through vales from 1.1 to 2 lerp;
+          //     this.ctx.stroke();
+          // }
+          
+          // renderBubbleWord = (word) => {
+              //     // vars
+              //     let x = word.x / 100 * this.gameCanvas.width; // turning percent to pixel cordinates
+              //     let y  = word.y / 100 * this.gameCanvas.height;
+              //     const textMetrics = this.ctx.measureText(word.text); // text measurements object
+              //     const textWidth = textMetrics.width
+              //     const outerCircleRadius = textWidth - textWidth *.2;
+              
+              //     // const textWidth = textMetrics.width;
+              
+              //     // ctx settings
+              //     this.ctx.font = "30px Arial";
+              //     this.ctx.strokeStyle = "white";
+              
+              //     // adjust to width boundaries
+              //     x = this.adjustToFitX(x, textWidth, outerCircleRadius);
+              
+              //     // Color words correctly
+              //     this.renderWordColors(word, x, y);
+              
+              
+              //     // Draw bubbles around words
+              //     const centerX = textMetrics.width / 2 + x; // half of width of text + x position,
+              //     const centerY = y - textMetrics.fontBoundingBoxDescent;
+              //     this.renderBubble(textWidth, centerX, centerY);
+              // }
+              
     renderWordColors = (word, x, y) => {
         for (let i = 0; i < word.text.length; i++) {
             if (word.text[i] === word.correctlyTyped[i]) {
@@ -169,46 +211,81 @@ class Display {
         }
     }
 
-    renderBubble = (textWidth, centerX, centerY) => {
-        // vars
-        
-        // draw outer circle
-        this.ctx.beginPath();
-        this.ctx.arc(centerX, centerY, textWidth - textWidth *.2, 0, Math.PI * 2, true);
-        this.ctx.stroke();
-        
-        // draw inner circle
-        this.ctx.beginPath();
-        this.ctx.arc(centerX, centerY, textWidth - textWidth * .3, 0, Math.PI * 2 / 1.5, true) // you could animate that by going through vales from 1.1 to 2 lerp;
-        this.ctx.stroke();
+    lerp = (a, b, alpha) => {
+        return a + alpha * (b - a);
     }
     
-    renderBubbleWord = (word) => {
-        // vars
-        let x = word.x / 100 * this.gameCanvas.width; // turning percent to pixel cordinates
-        let y  = word.y / 100 * this.gameCanvas.height;
-        const textMetrics = this.ctx.measureText(word.text); // text measurements object
-        const textWidth = textMetrics.width
-        const outerCircleRadius = textWidth - textWidth *.2;
-        
-        // const textWidth = textMetrics.width;
-        
-        // ctx settings
-        this.ctx.font = "30px Arial";
-        this.ctx.strokeStyle = "white";
-        
-        // adjust to width boundaries
-        x = this.adjustToFitX(x, textWidth, outerCircleRadius);
-        
-        // Color words correctly
-        this.renderWordColors(word, x, y);
-        
-        
-        // Draw bubbles around words
-        const centerX = textMetrics.width / 2 + x; // half of width of text + x position,
-        const centerY = y - textMetrics.fontBoundingBoxDescent;
-        this.renderBubble(textWidth, centerX, centerY);
+    getX = (from, to, alpha) => {
+        const percentToCanvasX = (x) => x / 100 * this.gameCanvas.width
+        return this.lerp(percentToCanvasX(from), percentToCanvasX(to), alpha);
     }
+                
+    getY = (from, to, alpha) => {
+        const percentToCanvasY = (y) => y / 100 * this.gameCanvas.height
+        return this.lerp(percentToCanvasY(from), percentToCanvasY(to), alpha);
+    }
+
+    adjustToFit = (x, y, bubbleRadius) => {
+
+        const rightBoundary = x + bubbleRadius
+        const leftBoundary = x - bubbleRadius
+        const topBoundary = y - bubbleRadius;
+        const bottomBoundary = y + bubbleRadius;
+        
+        // adjust left right
+        if (rightBoundary >= this.gameCanvas.width) {
+            x = x - (rightBoundary - this.gameCanvas.width)
+        } else if (leftBoundary <= 0) {
+            x = x - (leftBoundary)
+        }
+
+        // adjust top bottom
+        if (topBoundary <= 0) {
+            y = y - (topBoundary);
+        } else if (bottomBoundary >= this.gameCanvas.height) {
+            y = y - (bottomBoundary - this.gameCanvas.height)
+        }
+        return [x, y];
+
+    }
+
+    drawBubbleWord = (word, x, y) => {
+
+        this.ctx.font = "30px Arial";
+
+        const textMetrics = this.ctx.measureText(word.text);
+        const textWidth = textMetrics.width;
+        const bubbleRadius = textWidth - textWidth * .2;
+
+        [x, y] = this.adjustToFit(x, y, bubbleRadius);
+
+        this.ctx.strokeStyle = "white";
+        // draw outer circle
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, bubbleRadius, 0, Math.PI * 2);
+        this.ctx.stroke();
+
+        // draw inner decoration
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, bubbleRadius - bubbleRadius * .2, 0, Math.PI * 2 / 1.5, true);
+        this.ctx.stroke();
+
+        // draw Text
+        const textX = x - textWidth / 2;
+        const textY = y + textMetrics.fontBoundingBoxDescent;
+        this.renderWordColors(word, textX, textY);
+    }
+
+    renderBubbleWord = (word) => {
+
+        this.drawBubbleWord(
+            word, 
+            this.getX(word.position.from.x, word.position.to.x, word.position.alpha), 
+            this.getY(word.position.from.y, word.position.to.y, word.position.alpha)
+        )
+
+    }
+
 
     init = () => {
         // this.createTemporaryButton();

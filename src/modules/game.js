@@ -179,10 +179,11 @@ class Game {
     renderWords = () => {
         this.bubbleMachine.words.forEach(word => {
             this.display.renderBubbleWord(word);
-            word.y -= word.speed / 5;
-            if (word.y <= 0) {
-                word.y = 100; 
-            };
+            word.position.update();
+            // word.y -= word.speed / 5;
+            // if (word.y <= 0) {
+            //     word.y = 100; 
+            // };
         })
     }
 

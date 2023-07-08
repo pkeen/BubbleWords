@@ -28,11 +28,14 @@ class BubbleMachine {
         // next excpected
         this.expected += this.interval;
         // function create random nuber of bubbles between 2 - 8
-        this.createRandomBubbles();
+        if (this.words.length < 5) {
+            this.createRandomBubbles();
+        }
         
         // Function for different animation values of innner circle ?
         // LERP
-        console.log(this.words.length);
+        // this.redirectBubbles();
+        // console.log(this.words.length);
         
         // repeat
         this.timeout = setTimeout(this.repeat, this.interval - drift);
@@ -45,8 +48,16 @@ class BubbleMachine {
         let numBubbles = Math.floor(Math.random() * (maxBubbles - minBubbles) + minBubbles);
         for (let i = 0; i < numBubbles; i++) {
             // this.callBack();
-            this.words.push(new Word(WORDLIST[Math.floor(Math.random() * WORDLIST.length)]));
+            const newWord = new Word(WORDLIST[Math.floor(Math.random() * WORDLIST.length)])
+            newWord.initPosition();
+            this.words.push(newWord);
         }
+    }
+
+    redirectBubbles = () => {
+        this.words.forEach(word => {
+            word.y = word.y - Math.floor(Math.random() * 3);
+        })
     }
 
 }
