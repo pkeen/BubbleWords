@@ -52,6 +52,8 @@ class BubbleMachine {
             newWord.initPosition();
             this.words.push(newWord);
         }
+        // console.log(this.words);
+
     }
 
     redirectBubbles = () => {

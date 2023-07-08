@@ -88,6 +88,7 @@ class Game {
             //   }
               // this.render();
               this.testMatch(); // seems to
+              console.log(this.bubbleMachine.words) // debugging
           }
 
       });
@@ -101,8 +102,24 @@ class Game {
         this.score += wordScore;
     }
 
-    popWord = (index) => {
-        this.bubbleMachine.words.splice(index, 1);
+    cleanCorrectTyped = () => {
+        this.bubbleMachine.words.forEach(word => {
+            word.correctlyTyped = "";
+        })
+    }
+
+    popWords = (indexes) => {
+
+        indexes = indexes.sort((a, b) => b - a);
+        console.log(indexes);
+        indexes.forEach(i => {
+            // console.log(`Index: ${i}`);
+            this.bubbleMachine.words.splice(i, 1);
+        });
+        this.userString = "";
+        this.cleanCorrectTyped();
+        // this.bubbleMachine.words.splice(index, 1);
+        // this.userString = ""; // needs to pop two or more before
     }
 
     timeUp = () => {
@@ -118,12 +135,31 @@ class Game {
     }
 
     testMatch = () => {
-        this.bubbleMachine.words.forEach((word, index, array) => {
-            if (word.regExp.test(this.userString)) {
-                this.calculateScore(word.text);
-                this.popWord(index);
+        const wordsToPop = [];
+        // this.bubbleMachine.words.forEach((word, index, array) => {
+        //     if (word.regExp.test(this.userString)) {
+        //         wordsToPop.push([word.text, index]);
+        //         // this.calculateScore(word.text);
+        //         // this.popWord(index);
+        //     }
+        // })
+        this.bubbleMachine.words.forEach((word, index) => {
+            if (word.text === word.correctlyTyped) {
+                wordsToPop.push([index])
             }
         })
+
+        // for (let i = this.bubbleMachine.words.length -1; i > -1 ; i--) {
+        //     if (this.bubbleMachine.words[i].text === this.bubbleMachine.words[i].correctlyTyped) {
+        //         this.bubbleMachine.words.splice(i, 1);
+        //     }
+        // }
+
+        if (wordsToPop.length > 0) {
+            this.popWords(wordsToPop);
+        }
+        // console.log(wordsToPop);
+
     }
 
     // creating words logic

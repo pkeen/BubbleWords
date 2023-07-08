@@ -41,9 +41,6 @@ class Position {
     genRandomTo = () => {
       this.to.x = Math.floor(Math.random() * 100);
       this.to.y = Math.floor(Math.random() * 100);
-      console.log(`alpha : ${this.alpha}`);
-      console.log(`from : ${this.from.x} ${this.from.y}`)
-      console.log(`to : ${this.to.x} ${this.to.y}`)
     }
     
 }
