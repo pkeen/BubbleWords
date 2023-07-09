@@ -3,6 +3,8 @@ import CountdownTimer from "./CountdownTimer.js";
 import Word from './word.js';
 import BubbleMachine from "./bubbleMachine.js";
 import WORDLIST from "./wordList.js"; // temporary
+import Position from "./position.js";
+import messages from "./messages.js";
 
 class Game {
 
@@ -11,7 +13,7 @@ class Game {
         // this.parentElement = parentElement;
         this.level = 0;
         this.score = 0;
-        this.paused = false; // temporary
+        this.paused = true; // temporary
         this.userChar;
         this.userString = "";
         // this.targetChar = 0;
@@ -23,9 +25,8 @@ class Game {
             3: 300,
             4: 400
         }
-        // temporary
-        // this.words = [new Word('hello', 30), new Word('example', 70)]
-        this.words = [];
+        this.messages = messages;
+        // this.words = [];
     }
     
 /* === EVENT LISTENERS === */
@@ -43,18 +44,6 @@ class Game {
                 let char = event.key;
                 // console.log('char: ', this.userChar);
                 this.userString += char;
-                // console.log(this.userString);
-                // this.words.forEach(word => {
-                //     if (this.userChar === word.text[word.targetChar]) {
-                //         word.correctyTyped += this.userChar
-                //         word.targetChar++;
-                //     } else {
-                //         word.correctlyTyped = "";
-                //         word.targetChar = 0;
-                //     }
-                //     console.log(word.correctlyTyped);
-                // })
-
                 // //working loop
                 // for (let i = 0; i < this.words.length; i++) {
                 //     if (this.userChar === this.words[i].text[this.words[i].targetChar]) {
@@ -88,7 +77,7 @@ class Game {
             //   }
               // this.render();
               this.testMatch(); // seems to
-              console.log(this.bubbleMachine.words) // debugging
+            //   console.log(this.bubbleMachine.words) // debugging
           }
 
       });
@@ -97,7 +86,7 @@ class Game {
 
 /* === GAME LOGIC FUNCTIONS === */
 
-    calculateScore = (text) => {
+    addScore = (text) => {
         let wordScore = text.length * 50;
         this.score += wordScore;
     }
@@ -111,9 +100,10 @@ class Game {
     popWords = (indexes) => {
 
         indexes = indexes.sort((a, b) => b - a);
-        console.log(indexes);
+        // console.log(indexes);
         indexes.forEach(i => {
             // console.log(`Index: ${i}`);
+            this.addScore(this.bubbleMachine.words[i].text);
             this.bubbleMachine.words.splice(i, 1);
         });
         this.userString = "";
@@ -126,11 +116,12 @@ class Game {
         this.paused = true;
         console.log(this.score - this.scoreBeforeRound)
         if ((this.score - this.scoreBeforeRound) >= this.scoreNeededPerRound[this.level]) {
-            this.level++;
+            // this.level++;
             console.log(this.scoreNeededPerRound[this.level])
         }
         // console.log('paused = ', this.paused);
         // console.log('You scored: ', this.score);
+        this.setPausedMessages();
         this.render();
     }
 
@@ -162,70 +153,91 @@ class Game {
 
     }
 
-    // creating words logic
-    // getNewTargetWord = () => {
-    //     this.targetString = this.wordList[Math.floor(Math.random() * this.wordList.length)];
-    //     this.targetRegEx = new RegExp(this.targetString);
-    //     console.log(`target word : ${this.targetString}`);
+
+    // startNewRound = () => {
+    //     console.log('round started');
+    //     if(this.level === 0) {
+    //         this.level =1;
+    //     }
+    //     this.paused = false;
+    //     console.log('this paused =', this.paused)
+    //     this.userString = "";
+    //     // this.targetChar = 0;
+    //     // this.correctlyTyped = "";
+    //     this.scoreBeforeRound = this.score;
+    //     this.getNewTargetWord();
+    //     this.render();
     // }
 
-    // createWord = () => {
-    //     this.words.push(new Word(this.wordList[Math.floor(Math.random() * this.wordList.length)]));
+    // startNewLevel = () => {
+    //     if (this.timer) {
+    //         this.timer.stop(); // if its running
+    //     }
+    //     this.timer = new CountdownTimer(1000, 5, this.display.timerElement, this.timeUp); 
+    //     this.timer.init();
+    //     this.startNewRound();
+    //     this.timer.start();
     // }
-
-    // produceNewWords = () => {
-    //     let intervalID
-    // }
-
-
-    startNewRound = () => {
-        console.log('round started');
-        if(this.level === 0) {
-            this.level =1;
-        }
-        this.paused = false;
-        console.log('this paused =', this.paused)
-        this.userString = "";
-        // this.targetChar = 0;
-        // this.correctlyTyped = "";
-        this.scoreBeforeRound = this.score;
-        this.getNewTargetWord();
-        this.render();
-    }
 
     startNewLevel = () => {
         if (this.timer) {
-            this.timer.stop(); // if its running
+            this.timer.stop();
         }
-        this.timer = new CountdownTimer(1000, 5, this.display.timerElement, this.timeUp); 
-        this.timer.init();
-        this.startNewRound();
+
+        this.level++;
+        this.timer = new CountdownTimer(1000, 8, this.timeUp);
+        this.bubbleMachine = new BubbleMachine(1500);
+        this.paused = false;
         this.timer.start();
+        this.bubbleMachine.start();
+        
     }
+
     /* End of Gameplay functions */
 
-    // render = () => {
-    //     this.display.setLayout(this.paused);
-    //     this.display.renderHeader(this.level, this.score);
-    //     this.display.renderTargetWord(this.targetString, this.correctlyTyped);
-    //     // this.display.renderTyping(this.correctlyTyped);
-    //     this.display.renderPausedMessage(this.score);
-    // }
-
     renderWords = () => {
+        if (!this.bubbleMachine) return;
+
         this.bubbleMachine.words.forEach(word => {
             this.display.renderBubbleWord(word);
             word.position.update();
-            // word.y -= word.speed / 5;
-            // if (word.y <= 0) {
-            //     word.y = 100; 
-            // };
         })
+
+    }
+
+    renderMessages = () => {
+    
+        this.messages.forEach(msg => {
+            this.display.renderMessage(msg);
+            msg.position.update();
+        });
+        
+    }
+
+    setPausedMessages = () => {
+        if (this.score) {
+            this.messages[0].text = `You scored ${this.score}`;
+            this.messages[1].text = "Hit space to continue";
+        } else {
+            // this.messages.main.text = "Welcome to "
+        }
+
     }
 
     render = () => {
-        this.display.ctx.clearRect(0, 0, this.display.gameCanvas.width, this.display.gameCanvas.height);   // clear function
-        this.renderWords();
+        this.display.ctx.clearRect(0, 0, this.display.gameCanvas.width, this.display.gameCanvas.height);  // clear function
+        // this.display.setLayout(this.paused);
+        if (this.paused) {
+            // this.display.renderPaused(this.messages, this.score);
+            this.renderMessages();
+
+        } else {
+            this.renderWords();
+            this.display.renderScore(this.score);
+            this.display.renderLevel(this.level);
+            this.display.renderTimer(this.timer.secondsRemaining);
+        }
+        // this.display.renderTimer(this.timer.secondsRemaining);
         // this.display.renderOtherThing();
         // this.display.renderTargetWord(this.wordOne);
         // this.wordOne.y += this.wordOne.speed / 10;
@@ -235,11 +247,12 @@ class Game {
     init = () => {
         this.display.init(); // create all elements
         this.addKeyboardEventListener();
+        // this.startNewLevel();
         // this.display.setLayout(this.paused);
         // this.display.startButton.addEventListener('click', this.startNewLevel) // add start round to temporary button
         // console.log(this.words);
-        this.bubbleMachine = new BubbleMachine(1500);
-        this.bubbleMachine.start();
+        // this.bubbleMachine = new BubbleMachine(1500);
+        // this.bubbleMachine.start();
         // this.bubbleMachine.words.push(new Word(WORDLIST[Math.floor(Math.random() * WORDLIST.length)]));
         this.render();
     }

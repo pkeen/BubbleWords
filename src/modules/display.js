@@ -1,6 +1,11 @@
+import Position from "./position.js";
+
 class Display {
     constructor(parentElement) {
         this.parentElement = parentElement;
+        this.primaryColor = '#83D2F3';
+        this.mainMsg = {};
+        this.subMsg = {};
     }
 
      /* Create game DOM elements
@@ -12,7 +17,7 @@ class Display {
 
     */
 
-    createGameElement = () => {
+    createGameCanvas= () => {
         this.gameCanvas = document.createElement('canvas');
         this.gameCanvas.setAttribute('width', document.getElementById('app').clientWidth);
         this.gameCanvas.setAttribute('height', document.getElementById('app').clientHeight);
@@ -21,22 +26,22 @@ class Display {
         this.parentElement.append(this.gameCanvas);
     }
 
-    createPausedElement = () => {
-        this.pausedElement = document.createElement('div');
-        this.pausedElement.setAttribute('id', 'paused');
-        this.parentElement.append(this.pausedElement);
-    }
+    // createPausedElement = () => {
+    //     this.pausedElement = document.createElement('div');
+    //     this.pausedElement.setAttribute('id', 'paused');
+    //     this.parentElement.append(this.pausedElement);
+    // }
         
-    createPausedMessageElement = () => {
-        this.pausedMessageDiv = document.createElement('div');
-        this.mainPausedMessage = document.createElement('h1');
-        this.subPausedMessage = document.createElement('h3');
-        this.continueMessage = document.createElement('h4');
-        this.continueMessage.setAttribute('id', 'continue');
+    // createPausedMessageElement = () => {
+    //     this.pausedMessageDiv = document.createElement('div');
+    //     this.mainPausedMessage = document.createElement('h1');
+    //     this.subPausedMessage = document.createElement('h3');
+    //     this.continueMessage = document.createElement('h4');
+    //     this.continueMessage.setAttribute('id', 'continue');
        
-        this.pausedMessageDiv.append(this.mainPausedMessage, this.subPausedMessage, this.continueMessage);
-        this.pausedElement.append(this.pausedMessageDiv); // belongs in paused element
-    }
+    //     this.pausedMessageDiv.append(this.mainPausedMessage, this.subPausedMessage, this.continueMessage);
+    //     this.pausedElement.append(this.pausedMessageDiv); // belongs in paused element
+    // }
 
     // createHeaderElement = () => {
     //     this.headerElement = document.createElement('div');
@@ -109,40 +114,17 @@ class Display {
     //     this.continueMessage.innerHTML = `Press the spacebar to ${score ? 'continue' : 'begin'}`
     // }
 
-    // setLayout = (paused) => {
-    //     if (paused === true) {
-    //         this.pausedElement.style.display = 'flex';
-    //         this.gameElement.style.display = 'none';
-    //     } else {
-    //         this.gameElement.style.display = 'grid';
-    //         this.pausedElement.style.display = 'none';
-    //     }
-    // }
+    setLayout = (paused) => {
+        if (paused === true) {
+            this.pausedElement.style.display = 'flex';
+            this.gameCanvas.style.display = 'none';
+        } else {
+            this.gameCanvas.style.display = 'block';
+            this.pausedElement.style.display = 'none';
+        }
+    }
     
-    // renderOtherThing = () => {
-    //     const data = `
-    //         <svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'>
-    //         <foreignObject width='100%' height='100%'>
-    //             <div xmlns='http://www.w3.org/1999/xhtml' style='font-size:40px'>
-    //             <em>I</em> like <span style='color:white; text-shadow:0 0 2px blue;'>CANVAS</span>
-    //             </div>
-    //         </foreignObject>
-    //         </svg>
-    //         `;
-    //     const img = new Image();
-    //     const svg = new Blob([data], {type: "image/svg+xml;charset=utf-8"});
-    //     const url = URL.createObjectURL(svg);
-    //     img.onload = () => {
-    //         this.ctx.drawImage(img, 0, 0);
-    //         URL.revokeObjectURL(url);
-    //     };
-    //     img.src = url;
-    // }
 
-    // renderColoredText = () => {
-    //     const text = ``;
-
-    // }
    adjustToFitX = (x, textWidth, outerCircleRadius) => {
         // if it exceeds right
         const rightBoundary = x + (textWidth / 2) + outerCircleRadius
@@ -199,6 +181,9 @@ class Display {
               // }
               
     renderWordColors = (word, x, y) => {
+
+        this.ctx.textAlign = 'left'; // align text left
+
         for (let i = 0; i < word.text.length; i++) {
             if (word.text[i] === word.correctlyTyped[i]) {
                 this.ctx.fillStyle = '#1BF9A9';
@@ -216,11 +201,13 @@ class Display {
     }
     
     getX = (from, to, alpha) => {
+        // Covert from percentage to canvas cordinate
         const percentToCanvasX = (x) => x / 100 * this.gameCanvas.width
         return this.lerp(percentToCanvasX(from), percentToCanvasX(to), alpha);
     }
                 
     getY = (from, to, alpha) => {
+        // Covert from percentage to canvas cordinate
         const percentToCanvasY = (y) => y / 100 * this.gameCanvas.height
         return this.lerp(percentToCanvasY(from), percentToCanvasY(to), alpha);
     }
@@ -285,13 +272,97 @@ class Display {
         )
 
     }
+    
+    // Format the time
+    formatTime = (secondsRemaining) => {
+        const seconds = secondsRemaining % 60;
+        const minutes = Math.floor(secondsRemaining / 60);
+        return `${minutes} : ${seconds < 10 ? '0' : ''}${seconds}`;
+    }
 
+    renderTimer = (secondsRemaining) => {
+        this.ctx.font = "30px Arial";
+        const text = this.formatTime(secondsRemaining);
+        const textWidth = this.ctx.measureText(text).width;
+        const x = this.gameCanvas.width / 2;
+        this.ctx.fillStyle = this.primaryColor;
+        this.ctx.fillText(text, x, 100);
+        // this.ctx.fillText
+    }
+
+
+    renderScore = (score) => {
+        this.ctx.font = "30px Arial";
+        const text = `Score: ${score}`;
+        const textWidth = this.ctx.measureText(text).width;
+        const x = this.gameCanvas.width * 0.2;
+        this.ctx.fillStyle = this.primaryColor;
+        this.ctx.fillText(text, x - textWidth / 2, 50);
+    }
+
+    renderLevel = (level) => {
+        this.ctx.font = "30px Arial";
+        const text = `Level: ${level}`;
+        const textWidth = this.ctx.measureText(text).width;
+        const x = this.gameCanvas.width * 0.8;
+        this.ctx.fillStyle = this.primaryColor;
+        this.ctx.fillText(text, x - textWidth / 2, 50);
+    }
+
+    // renderPaused = (score) => {
+    
+    //     if (score) {
+    //         this.mainMsg.text = `You scored ${score}!`;
+    //         this.subMsg.text = `Hit space to continue`;
+    //     } else {
+    //         this.mainMsg.text = 'Welcome to Bubble World';
+    //         this.subMsg.text = `Hit space to begin`;
+    //     }
+
+    //     // render main message in center
+    //     this.ctx.font = "48px Arial";
+    //     this.ctx.fillStyle = 'white';
+    //     this.ctx.textAlign = "center";
+    //     this.ctx.fillText(this.mainMsg.text, this.gameCanvas.width / 2, this.gameCanvas.height / 2);
+
+    //     // render sub message moving
+    //     this.ctx.font = "30px Arial";
+    //     this.ctx.fillStyle = this.primaryColor;
+    //     this.ctx.fillText(this.subMsg.text, this.gameCanvas.width / 2, this.gameCanvas.height / 2 + 50);
+
+    // }
+
+    // renderPaused = (messages, score) => {
+    //     if (score) {
+    //         messages.main.text = 'You score ${score}';
+    //         messages.sub.text = `Hit space to continue`;
+    //     } else {
+    //         messages.main.text = 'Welcome to Bubble World';
+    //         messages.sub.text = "Hit space to begin";
+    //     }
+
+    //     // render main message 
+    //     this.ctx.font = "48px Arial";
+    //     this.ctx.fillStyle = 'white';
+    //     this.ctx.textAlign = "center";
+    //     this.ctx.fillText(messages.main.text, messages.main.position.from.x, messages.main.position.from.y);
+    // }
+
+    renderMessage = (msg) => {
+
+        this.ctx.font = msg.font;
+        this.ctx.fillStyle = msg.fillStyle;
+        this.ctx.textAlign = msg.textAlign;
+        this.ctx.fillText(msg.text, this.getX(msg.position.from.x, msg.position.to.x, msg.position.alpha), 
+        this.getY(msg.position.from.y, msg.position.to.y, msg.position.alpha));
+        
+    }
 
     init = () => {
         // this.createTemporaryButton();
-        this.createGameElement();
-        this.createPausedElement();
-        this.createPausedMessageElement();
+        this.createGameCanvas();
+        // this.createPausedElement();
+        // this.createPausedMessageElement();
         // this.createHeaderElement();
         // this.createTimerElement();
         // this.createTargetWordElement();

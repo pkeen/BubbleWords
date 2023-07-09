@@ -7,22 +7,23 @@ class CountdownTimer {
     Parameters: 
       timeInterval : How long between
       secondsRemaining : seconds to count down from
-      parentElement : where to place the timer display in DOM
       endingCallback : function to run after timer ends
+      parentElement : where to place the timer display in DOM // gone for this implementation
     */
     
-    constructor(timeInterval, secondsRemaining, parentElement, endingCallback) {
+    constructor(timeInterval, secondsRemaining, endingCallback) {
         this.timeInterval = timeInterval;
         this.secondsRemaining = secondsRemaining;
-        this.parentElement = parentElement;
         this.endingCallback = endingCallback;
-        this.timerElement = document.createElement('p');
+        // this.parentElement = parentElement;
+        // this.timerElement = document.createElement('p');
     }
     
     // start timer
     start = () => {
       this.expected = Date.now() + this.timeInterval
       this.timeout = setTimeout(this.round, this.timeInterval);
+      console.log(this.secondsRemaining); // testing
     }
       
     // to stop timer
@@ -40,7 +41,8 @@ class CountdownTimer {
         
         this.expected += this.timeInterval;
         this.secondsRemaining--;
-        this.render();
+        console.log(this.secondsRemaining); // testing
+        // this.render();
         
         if (this.secondsRemaining <= 0) {
           // console.log(this.timeout);
@@ -50,24 +52,24 @@ class CountdownTimer {
         }
     }
   
-    // Format the time
-    formatTime = () => {
-      const seconds = this.secondsRemaining % 60;
-      const minutes = Math.floor(this.secondsRemaining / 60);
-      return `${minutes} : ${seconds < 10 ? '0' : ''}${seconds}`;
-    }
+    // // Format the time
+    // formatTime = () => {
+    //   const seconds = this.secondsRemaining % 60;
+    //   const minutes = Math.floor(this.secondsRemaining / 60);
+    //   return `${minutes} : ${seconds < 10 ? '0' : ''}${seconds}`;
+    // }
     
-    // render in DOM
-    render = () => {
-      this.timerElement.innerHTML = this.formatTime();
-    }
+    // // render in DOM
+    // render = () => {
+    //   this.timerElement.innerHTML = this.formatTime();
+    // }
   
-    // intialization must be called before start
-    init = () => {
-      this.parentElement.innerHTML = '';
-      this.parentElement.append(this.timerElement);
-      this.render();
-    }
+    // // intialization must be called before start
+    // init = () => {
+    //   // this.parentElement.innerHTML = '';
+    //   // // this.parentElement.append(this.timerElement);
+    //   // this.render();
+    // }
 }
 
 export default CountdownTimer;

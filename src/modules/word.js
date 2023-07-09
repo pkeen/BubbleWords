@@ -11,6 +11,14 @@ class Word {
         this.targetChar = 0;
     }
 
+    generateNextPosition () {
+        this.from.x = this.to.x;
+        this.from.y = this.to.y;
+        this.to.x = Math.floor(Math.random() * 100);
+        this.to.y = Math.floor(Math.random() * 100);
+        this.alpha = 0;
+    }
+
     initPosition = () => {
         this.position = new Position(this.generateNextPosition);
     }
