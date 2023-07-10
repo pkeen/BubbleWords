@@ -124,62 +124,7 @@ class Display {
         }
     }
     
-
-   adjustToFitX = (x, textWidth, outerCircleRadius) => {
-        // if it exceeds right
-        const rightBoundary = x + (textWidth / 2) + outerCircleRadius
-        const leftBoundary = x + (textWidth / 2) - outerCircleRadius
-        if (rightBoundary >= this.gameCanvas.width) {
-          x = x - (rightBoundary - this.gameCanvas.width)
-        } else if (leftBoundary <= 0) {
-          x = x - (leftBoundary)
-        }
-        return x;
-      }
-      
-
-      
-      // renderBubble = (textWidth, centerX, centerY) => {
-          //     // vars
-          
-          //     // draw outer circle
-          //     this.ctx.beginPath();
-          //     this.ctx.arc(centerX, centerY, textWidth - textWidth *.2, 0, Math.PI * 2, true);
-          //     this.ctx.stroke();
-          
-          //     // draw inner circle
-          //     this.ctx.beginPath();
-          //     this.ctx.arc(centerX, centerY, textWidth - textWidth * .3, 0, Math.PI * 2 / 1.5, true) // you could animate that by going through vales from 1.1 to 2 lerp;
-          //     this.ctx.stroke();
-          // }
-          
-          // renderBubbleWord = (word) => {
-              //     // vars
-              //     let x = word.x / 100 * this.gameCanvas.width; // turning percent to pixel cordinates
-              //     let y  = word.y / 100 * this.gameCanvas.height;
-              //     const textMetrics = this.ctx.measureText(word.text); // text measurements object
-              //     const textWidth = textMetrics.width
-              //     const outerCircleRadius = textWidth - textWidth *.2;
-              
-              //     // const textWidth = textMetrics.width;
-              
-              //     // ctx settings
-              //     this.ctx.font = "30px Arial";
-              //     this.ctx.strokeStyle = "white";
-              
-              //     // adjust to width boundaries
-              //     x = this.adjustToFitX(x, textWidth, outerCircleRadius);
-              
-              //     // Color words correctly
-              //     this.renderWordColors(word, x, y);
-              
-              
-              //     // Draw bubbles around words
-              //     const centerX = textMetrics.width / 2 + x; // half of width of text + x position,
-              //     const centerY = y - textMetrics.fontBoundingBoxDescent;
-              //     this.renderBubble(textWidth, centerX, centerY);
-              // }
-              
+     
     renderWordColors = (word, x, y) => {
 
         this.ctx.textAlign = 'left'; // align text left
@@ -291,17 +236,34 @@ class Display {
     }
 
 
-    renderScore = (score) => {
-        this.ctx.font = "30px Arial";
+    renderScore = (score, scoreNeeded) => {
+
+        this.ctx.font = "20px Arial";
         const text = `Score: ${score}`;
         const textWidth = this.ctx.measureText(text).width;
         const x = this.gameCanvas.width * 0.2;
-        this.ctx.fillStyle = this.primaryColor;
+
+        // Show score in green if exceeds score needed
+        if (score >= scoreNeeded) {
+            this.ctx.fillStyle = '#1BF9A9';
+        } else {
+            this.ctx.fillStyle = this.primaryColor;
+        }
+        
         this.ctx.fillText(text, x - textWidth / 2, 50);
     }
 
+    // renderScoreNeeded = (scoreNeeded) => {
+    //     this.ctx.font = "20px Arial";
+    //     const text = `Needed: ${scoreNeeded}`;
+    //     const textWidth = this.ctx.measureText(text).width;
+    //     const x = this.gameCanvas.width * 0.2;
+    //     this.ctx.fillStyle = this.primaryColor;
+    //     this.ctx.fillText(text, x - textWidth / 2, 70);
+    // }
+
     renderLevel = (level) => {
-        this.ctx.font = "30px Arial";
+        this.ctx.font = "20px Arial";
         const text = `Level: ${level}`;
         const textWidth = this.ctx.measureText(text).width;
         const x = this.gameCanvas.width * 0.8;
@@ -355,7 +317,7 @@ class Display {
         this.ctx.textAlign = msg.textAlign;
         this.ctx.fillText(msg.text, this.getX(msg.position.from.x, msg.position.to.x, msg.position.alpha), 
         this.getY(msg.position.from.y, msg.position.to.y, msg.position.alpha));
-        
+
     }
 
     init = () => {

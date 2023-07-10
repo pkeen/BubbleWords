@@ -1,10 +1,8 @@
 import Display from "./display.js";
 import CountdownTimer from "./CountdownTimer.js";
-import Word from './word.js';
 import BubbleMachine from "./bubbleMachine.js";
-import WORDLIST from "./wordList.js"; // temporary
+import Message from "./message.js";
 import Position from "./position.js";
-import messages from "./messages.js";
 
 class Game {
 
@@ -13,21 +11,54 @@ class Game {
         // this.parentElement = parentElement;
         this.level = 0;
         this.score = 0;
-        this.paused = true; // temporary
+        this.pausedState = 1; // temporary
         this.userChar;
         this.userString = "";
         // this.targetChar = 0;
         // this.correctlyTyped = ""; // These values have been moved into words
         this.targetString = '';
-        this.scoreNeededPerRound = {
-            1: 100,
-            2: 200,
-            3: 300,
-            4: 400
-        }
-        this.messages = messages;
-        // this.words = [];
+        this.pausedMessages = [];
+        this.preRoundMsg;
     }
+
+/* === SETUP === */
+
+    initPausedMessages = () => {
+
+        // Main Message
+        this.pausedMessages.push(new Message(
+            'Welcome to Bubble Words', 
+            new Position(
+                function () {
+                    this.from.x = this.to.x;
+                    this.from.y = this.to.y;
+                }, 
+                {x: 50, y: 50},
+                {x: 50, y: 50}
+            ),
+            "48px Arial",
+            "white",
+            "center"
+        ));
+
+        // sub message
+        this.pausedMessages.push(new Message(
+            "Hit the space key to begin",
+            new Position(
+                function () {
+                this.from.x = this.to.x;
+                this.from.y = this.to.x;
+                },
+                {x: 50, y: 100},
+                {x: 50, y: 58},
+                5
+            ),
+            "30px Arial",
+            '#83D2F3',
+            "center"
+        ));
+    }
+
     
 /* === EVENT LISTENERS === */
 
@@ -35,27 +66,14 @@ class Game {
         // event listener for keyboard input
       document.addEventListener("keydown", (event) => {
           // If paused we're only listening for the space key
-          if (this.paused) {
+          if (this.pausedState === 1) {
               if(event.code === 'Space') {
                   console.log('space key')
                   this.startNewLevel();
               }
           } else {
                 let char = event.key;
-                // console.log('char: ', this.userChar);
-                this.userString += char;
-                // //working loop
-                // for (let i = 0; i < this.words.length; i++) {
-                //     if (this.userChar === this.words[i].text[this.words[i].targetChar]) {
-                //         console.log(this.userChar);
-                //         this.words[i].targetChar++;
-                //         this.words[i].correctlyTyped += this.userChar;
-                //     } else {
-                //         this.words[i].correctlyTyped = "";
-                //         this.words[i].targetChar = 0;
-                //     }
-                //     console.log(`${this.words[i].text} : ${this.words[i].correctlyTyped}`)
-                // }
+                // this.userString += char;
 
                 this.bubbleMachine.words.forEach(word => {
                     if (char === word.text[word.targetChar]) {
@@ -67,17 +85,7 @@ class Game {
                         word.targetChar = 0;
                     }
                 })
-            //   // logic for displaying so far correctly typed
-            //   if (this.userChar === this.targetString[this.targetChar]) {
-            //       this.correctlyTyped += this.userChar
-            //       this.targetChar++;
-            //   } else {
-            //       this.correctlyTyped = "";
-            //       this.targetChar = 0;
-            //   }
-              // this.render();
               this.testMatch(); // seems to
-            //   console.log(this.bubbleMachine.words) // debugging
           }
 
       });
@@ -91,7 +99,7 @@ class Game {
         this.score += wordScore;
     }
 
-    cleanCorrectTyped = () => {
+    clearCorrectTyped = () => {
         this.bubbleMachine.words.forEach(word => {
             word.correctlyTyped = "";
         })
@@ -107,18 +115,25 @@ class Game {
             this.bubbleMachine.words.splice(i, 1);
         });
         this.userString = "";
-        this.cleanCorrectTyped();
+        this.clearCorrectTyped();
         // this.bubbleMachine.words.splice(index, 1);
         // this.userString = ""; // needs to pop two or more before
     }
 
     timeUp = () => {
-        this.paused = true;
-        console.log(this.score - this.scoreBeforeRound)
-        if ((this.score - this.scoreBeforeRound) >= this.scoreNeededPerRound[this.level]) {
+        this.pausedState = 1;
+        // console.log(this.score - this.scoreBeforeRound)
+
+        // Set the paused state messages to show
+        if ((this.score - this.scoreBeforeRound) >= this.scoreNeeded) {
             // this.level++;
-            console.log(this.scoreNeededPerRound[this.level])
+            this.setPausedMessages();
         }
+
+        // reset the position of second paused message
+        this.pausedMessages[1].position.from.y = 100;
+
+
         // console.log('paused = ', this.paused);
         // console.log('You scored: ', this.score);
         this.setPausedMessages();
@@ -127,24 +142,12 @@ class Game {
 
     testMatch = () => {
         const wordsToPop = [];
-        // this.bubbleMachine.words.forEach((word, index, array) => {
-        //     if (word.regExp.test(this.userString)) {
-        //         wordsToPop.push([word.text, index]);
-        //         // this.calculateScore(word.text);
-        //         // this.popWord(index);
-        //     }
-        // })
+       
         this.bubbleMachine.words.forEach((word, index) => {
             if (word.text === word.correctlyTyped) {
                 wordsToPop.push([index])
             }
         })
-
-        // for (let i = this.bubbleMachine.words.length -1; i > -1 ; i--) {
-        //     if (this.bubbleMachine.words[i].text === this.bubbleMachine.words[i].correctlyTyped) {
-        //         this.bubbleMachine.words.splice(i, 1);
-        //     }
-        // }
 
         if (wordsToPop.length > 0) {
             this.popWords(wordsToPop);
@@ -153,44 +156,28 @@ class Game {
 
     }
 
-
-    // startNewRound = () => {
-    //     console.log('round started');
-    //     if(this.level === 0) {
-    //         this.level =1;
-    //     }
-    //     this.paused = false;
-    //     console.log('this paused =', this.paused)
-    //     this.userString = "";
-    //     // this.targetChar = 0;
-    //     // this.correctlyTyped = "";
-    //     this.scoreBeforeRound = this.score;
-    //     this.getNewTargetWord();
-    //     this.render();
-    // }
-
-    // startNewLevel = () => {
-    //     if (this.timer) {
-    //         this.timer.stop(); // if its running
-    //     }
-    //     this.timer = new CountdownTimer(1000, 5, this.display.timerElement, this.timeUp); 
-    //     this.timer.init();
-    //     this.startNewRound();
-    //     this.timer.start();
-    // }
+    startGame = () => {
+       
+        this.pausedState = -1
+        this.timer = new CountdownTimer(1000, 15, this.timeUp);
+        this.timer.start();
+        this.bubbleMachine.start();
+        // console.log('start game');
+      
+    }
 
     startNewLevel = () => {
         if (this.timer) {
             this.timer.stop();
         }
-
+        this.scoreNeeded = this.level * 100 + 1000;
+        this.scoreBeforeRound = this.score;
+        this.setPreRoundMessage();
         this.level++;
-        this.timer = new CountdownTimer(1000, 8, this.timeUp);
-        this.bubbleMachine = new BubbleMachine(1500);
-        this.paused = false;
+        this.timer = new CountdownTimer(1000, 3, this.startGame);
         this.timer.start();
-        this.bubbleMachine.start();
-        
+        this.bubbleMachine = new BubbleMachine(1500);
+        this.pausedState = 0;
     }
 
     /* End of Gameplay functions */
@@ -205,21 +192,76 @@ class Game {
 
     }
 
-    renderMessages = () => {
+    renderPausedMessages = () => {
     
-        this.messages.forEach(msg => {
+        this.pausedMessages.forEach(msg => {
             this.display.renderMessage(msg);
             msg.position.update();
         });
         
     }
 
+    setPreRoundMessage = () => {
+        this.preRoundMsg = new Message(
+            `You need to score ${this.scoreNeeded} points to advance`,
+            new Position(
+                function () {
+                    this.from.x = this.to.x;
+                    this.from.y = this.to.y;
+                }, 
+                {x: 50, y: 50},
+                {x: 50, y: 50}
+            ),
+
+        )
+    }
+
     setPausedMessages = () => {
+        console.log(this.score);
         if (this.score) {
-            this.messages[0].text = `You scored ${this.score}`;
-            this.messages[1].text = "Hit space to continue";
-        } else {
-            // this.messages.main.text = "Welcome to "
+            this.pausedMessages[0].text = `Total score ${this.score}`;
+            if (this.pausedMessages[2]) {
+                this.pausedMessages[2].text = `You needed ${this.scoreNeeded} and you scored ${this.score - this.scoreBeforeRound}`
+            } else {
+                console.log(this.scoreNeeded);
+                this.pausedMessages.push({
+                    text: `You needed ${this.scoreNeeded} and you scored ${this.score - this.scoreBeforeRound}`,
+                    fillStyle: '#83D2F3',
+                    textAlign: "center",
+                    position: new Position(
+                        function () {
+                            this.from.x = this.to.x;
+                            this.from.y = this.to.y;
+                        }, 
+                        {x: 50, y: 40},
+                        {x: 50, y: 40}
+                    )
+                })
+            }
+            if (this.pausedMessages[3]) {
+                this.pausedMessages[3].text = "Nicely done!"
+            } else {
+                this.pausedMessages.push(new Message(
+                    "Nicely done!",
+                    new Position(
+                        function() {
+                            this.from.x = this.to.x;
+                            this.from.y = this.to.y;
+                        },
+                        {x: 50, y: 0},
+                        {x: 50, y: 30},
+                    ),
+                    "38px Arial"
+                ))
+            }
+
+            if (this.score - this.scoreBeforeRound > this.scoreNeeded) {
+                this.pausedMessages[1].text = "Hit space to continue";
+                this.pausedMessages[3].text = "Nicely done!"
+            } else {
+                this.pausedMessages[1].text = "Hit space to restart"
+                this.pausedMessages[3].text = "Aww shoot..."
+            }
         }
 
     }
@@ -227,15 +269,24 @@ class Game {
     render = () => {
         this.display.ctx.clearRect(0, 0, this.display.gameCanvas.width, this.display.gameCanvas.height);  // clear function
         // this.display.setLayout(this.paused);
-        if (this.paused) {
+        if (this.pausedState === 1) {
+            // console.log('paused')
+            // actual puased state
             // this.display.renderPaused(this.messages, this.score);
-            this.renderMessages();
+            this.renderPausedMessages();
 
-        } else {
+        } else if (this.pausedState === -1) {
+            // game play state
+            // console.log('play')
             this.renderWords();
-            this.display.renderScore(this.score);
+            this.display.renderScore(this.score - this.scoreBeforeRound, this.scoreNeeded);
+            // this.display.renderScoreNeeded(this.scoreNeeded);
             this.display.renderLevel(this.level);
             this.display.renderTimer(this.timer.secondsRemaining);
+        } else {
+            // console.log('pre');
+            this.display.renderTimer(this.timer.secondsRemaining);
+            this.display.renderMessage(this.preRoundMsg);
         }
         // this.display.renderTimer(this.timer.secondsRemaining);
         // this.display.renderOtherThing();
@@ -247,6 +298,7 @@ class Game {
     init = () => {
         this.display.init(); // create all elements
         this.addKeyboardEventListener();
+        this.initPausedMessages();
         // this.startNewLevel();
         // this.display.setLayout(this.paused);
         // this.display.startButton.addEventListener('click', this.startNewLevel) // add start round to temporary button
