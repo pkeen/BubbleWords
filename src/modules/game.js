@@ -3,6 +3,8 @@ import CountdownTimer from "./CountdownTimer.js";
 import BubbleMachine from "./bubbleMachine.js";
 import Message from "./message.js";
 import Position from "./position.js";
+// import {initAudio, sfx} from './audio.js';
+import {sfx} from './audio.js';
 
 class Game {
 
@@ -80,6 +82,7 @@ class Game {
                         // console.log(char);
                         word.targetChar++;
                         word.correctlyTyped += char;
+                        sfx.pop1.play();
                     } else {
                         word.correctlyTyped = '';
                         word.targetChar = 0;
@@ -87,6 +90,8 @@ class Game {
                 })
               this.testMatch(); // seems to
           }
+
+          
 
       });
   }
@@ -114,6 +119,7 @@ class Game {
             this.addScore(this.bubbleMachine.words[i].text);
             this.bubbleMachine.words.splice(i, 1);
         });
+        sfx.pop2.play();
         this.userString = "";
         this.clearCorrectTyped();
         // this.bubbleMachine.words.splice(index, 1);
@@ -126,8 +132,11 @@ class Game {
 
         // Return to beggining if score not reached
         if ((this.score - this.scoreBeforeRound) < this.scoreNeeded) {
+            sfx.loss.play();
             // this.level++;
             this.level = 0;
+        } else {
+            sfx.win.play();
         }
 
         // reset the position of second paused message
@@ -159,9 +168,10 @@ class Game {
     startGame = () => {
        
         this.pausedState = -1
-        this.timer = new CountdownTimer(1000, 15, this.timeUp);
+        this.timer = new CountdownTimer(1000, 16, this.timeUp);
         this.timer.start();
         this.bubbleMachine.start();
+        sfx.music.play();
         // console.log('start game');
       
     }
@@ -304,6 +314,7 @@ class Game {
         // this.display.startButton.addEventListener('click', this.startNewLevel) // add start round to temporary button
         // console.log(this.words);
         // this.bubbleMachine = new BubbleMachine(1500);
+        // initAudio();
         // this.bubbleMachine.start();
         // this.bubbleMachine.words.push(new Word(WORDLIST[Math.floor(Math.random() * WORDLIST.length)]));
         this.render();

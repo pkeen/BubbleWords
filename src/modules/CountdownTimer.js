@@ -1,3 +1,7 @@
+import { sfx } from "./audio.js";
+
+// import {audio, audioCtx} from "./audio.js";
+
 class CountdownTimer {
   
     /* 
@@ -23,7 +27,8 @@ class CountdownTimer {
     start = () => {
       this.expected = Date.now() + this.timeInterval
       this.timeout = setTimeout(this.round, this.timeInterval);
-      console.log(this.secondsRemaining); // testing
+      // console.log(this.secondsRemaining); // testing
+      sfx.tick.play(); // play sound effect
     }
       
     // to stop timer
@@ -34,6 +39,8 @@ class CountdownTimer {
       
     // method that runs callback and adjust time interval
     round = () => {
+        sfx.tick.play();
+
         // expected is the time that we should be at if there was no drift    
         let drift = Date.now() - this.expected;
         // Check if drift greater than interval - browser clicked away
