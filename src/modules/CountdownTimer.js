@@ -12,27 +12,24 @@ class CountdownTimer {
       timeInterval : How long between
       secondsRemaining : seconds to count down from
       endingCallback : function to run after timer ends
-      parentElement : where to place the timer display in DOM // gone for this implementation
+      // not included in this implementation /// parentElement : where to place the timer display in DOM //
     */
     
     constructor(timeInterval, secondsRemaining, endingCallback) {
         this.timeInterval = timeInterval;
         this.secondsRemaining = secondsRemaining;
         this.endingCallback = endingCallback;
-        // this.parentElement = parentElement;
-        // this.timerElement = document.createElement('p');
     }
     
-    // start timer
     start = () => {
+      // start timer
       this.expected = Date.now() + this.timeInterval
       this.timeout = setTimeout(this.round, this.timeInterval);
-      // console.log(this.secondsRemaining); // testing
       sfx.tick.play(); // play sound effect
     }
       
-    // to stop timer
     stop = () => {
+      // to stop timer
         clearTimeout(this.timeout);
         this.endingCallback(); // call the ending function
     }
@@ -52,13 +49,16 @@ class CountdownTimer {
         // this.render();
         
         if (this.secondsRemaining <= 0) {
-          // console.log(this.timeout);
+          // stop timer when seconds reaches 0
           this.stop();
         } else {
+          // repeat for another second
           this.timeout = setTimeout(this.round, this.timeInterval - drift);
         }
     }
   
+    // these functions were for rendering in the DOM, but I moved the rendering functionality to display
+    
     // // Format the time
     // formatTime = () => {
     //   const seconds = this.secondsRemaining % 60;

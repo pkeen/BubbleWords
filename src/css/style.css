@@ -16,11 +16,9 @@ body {
 main {
   height: 100vh;
   width: 100vw;
-  /* display: grid; */
-  /* grid-template-rows: 1fr 1fr 1fr; */
 }
 
-h1,
+/* h1,
 h3,
 h4,
 p,
@@ -30,12 +28,8 @@ span {
 }
  /* game */
 
-#game {
-    /* height: 80vh; */
-    /* display: grid; */
-    /* grid-template-rows: 10% 30% 30% 30%; */
-}
 
+/* 
 #header {
     display: flex;
     justify-content: space-between;
@@ -45,7 +39,7 @@ span {
 }
 
 /* paused */
-#paused {
+/* #paused {
   justify-content: center;
   align-items: center;
   flex-direction: column;
@@ -71,4 +65,4 @@ span {
   color: #1BF9A9;
   text-decoration: underline;
   font-weight: 800;
-}
+} */  

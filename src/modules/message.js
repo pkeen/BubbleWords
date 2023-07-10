@@ -1,6 +1,9 @@
 import Position from "./position.js";
 
 class Message {
+
+    // contains information for rendering a message to the canvas
+    
     constructor(
         text, 
         position = new Position(

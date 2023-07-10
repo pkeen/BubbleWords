@@ -3,22 +3,18 @@ import CountdownTimer from "./CountdownTimer.js";
 import BubbleMachine from "./bubbleMachine.js";
 import Message from "./message.js";
 import Position from "./position.js";
-// import {initAudio, sfx} from './audio.js';
 import {sfx} from './audio.js';
 
 class Game {
 
     constructor(parentElement) {
         this.display = new Display(parentElement);
-        // this.parentElement = parentElement;
         this.level = 0;
         this.score = 0;
-        this.pausedState = 1; // temporary
+        this.pausedState = 1; // game starts paused
         this.userChar;
-        this.userString = "";
-        // this.targetChar = 0;
-        // this.correctlyTyped = ""; // These values have been moved into words
-        this.targetString = '';
+        this.userString = ""; // i think no longer needed
+        this.targetString = ''; // no longer needed
         this.pausedMessages = [];
         this.preRoundMsg;
     }
@@ -90,9 +86,6 @@ class Game {
                 })
               this.testMatch(); // seems to
           }
-
-          
-
       });
   }
 
@@ -100,74 +93,86 @@ class Game {
 /* === GAME LOGIC FUNCTIONS === */
 
     addScore = (text) => {
+        // 50 points for character in word
         let wordScore = text.length * 50;
         this.score += wordScore;
     }
 
     clearCorrectTyped = () => {
+        // Reset correctly typed after succesful word pop
         this.bubbleMachine.words.forEach(word => {
             word.correctlyTyped = "";
         })
     }
 
     popWords = (indexes) => {
+        // function to remove words from the array after correctly typed
+        // Takes indexes, then runs backwards through array, so as not to disrupt later indices
 
+        // sort indexes descending
         indexes = indexes.sort((a, b) => b - a);
-        // console.log(indexes);
+
+        // remove the indexes from words
         indexes.forEach(i => {
-            // console.log(`Index: ${i}`);
             this.addScore(this.bubbleMachine.words[i].text);
             this.bubbleMachine.words.splice(i, 1);
         });
+
+        // pop sound effect
         sfx.pop2.play();
+
+        // reset current user typing
         this.userString = "";
         this.clearCorrectTyped();
-        // this.bubbleMachine.words.splice(index, 1);
-        // this.userString = ""; // needs to pop two or more before
+       
     }
 
     timeUp = () => {
-        this.pausedState = 1;
-        // console.log(this.score - this.scoreBeforeRound)
-        console.log('timeup');
+        // call back function supplied to timer to be called at end of round
 
-        // Return to beggining if score not reached
+        // set paused state to paused
+        this.pausedState = 1;
+
+        // Return to beggining of game scoreNeeded not reached
         if ((this.score - this.scoreBeforeRound) < this.scoreNeeded) {
-            sfx.loss.play();
-            // this.level++;
+            sfx.loss.play(); // loss sound effect
             this.level = 0;
         } else {
             sfx.win.play();
         }
 
-        // reset the position of second paused message
+        // reset the position of second paused message for animation
         this.pausedMessages[1].position.from.y = 100;
 
 
-        // console.log('paused = ', this.paused);
-        // console.log('You scored: ', this.score);
+        // reset the paused messages
         this.setPausedMessages();
-        this.render();
+
     }
 
     testMatch = () => {
+        // testing for matches between typing and words
+
+        // array for indexes that match
         const wordsToPop = [];
-       
+        
+        // check each word for match
         this.bubbleMachine.words.forEach((word, index) => {
             if (word.text === word.correctlyTyped) {
                 wordsToPop.push([index])
             }
         })
 
+        // call pop words if array is not empty
         if (wordsToPop.length > 0) {
             this.popWords(wordsToPop);
         }
-        // console.log(wordsToPop);
 
     }
 
     startGame = () => {
-       
+        // callback function for pre-round timer to start the game properly
+
         this.pausedState = -1
         this.timer = new CountdownTimer(1000, 16, this.timeUp);
         this.timer.start();
@@ -177,10 +182,13 @@ class Game {
     }
 
     startNewLevel = () => {
+        // start new level 
         this.scoreNeeded = this.level * 100 + 1000;
         this.scoreBeforeRound = this.score;
         this.setPreRoundMessage();
         this.level++;
+
+        // when timer ends game starts for real
         this.timer = new CountdownTimer(1000, 3, this.startGame);
         this.timer.start();
         this.bubbleMachine = new BubbleMachine(1500);
@@ -189,9 +197,15 @@ class Game {
 
     /* End of Gameplay functions */
 
+    /* Rendering Functions */
+
     renderWords = () => {
+        // render words function
+
+        // return if no words
         if (!this.bubbleMachine) return;
 
+        // call renderBubbleWord in display
         this.bubbleMachine.words.forEach(word => {
             this.display.renderBubbleWord(word);
             word.position.update();
@@ -200,7 +214,7 @@ class Game {
     }
 
     renderPausedMessages = () => {
-    
+        // pass each paused message to be rendered in display
         this.pausedMessages.forEach(msg => {
             this.display.renderMessage(msg);
             msg.position.update();
@@ -277,43 +291,36 @@ class Game {
 
         // Main Animation Loop
 
-        this.display.ctx.clearRect(0, 0, this.display.gameCanvas.width, this.display.gameCanvas.height);  // clear function
-        // this.display.setLayout(this.paused);
+        // clear the canvas each loop
+        this.display.ctx.clearRect(0, 0, this.display.gameCanvas.width, this.display.gameCanvas.height);
+
+        // logic for what to render based on paused state
         if (this.pausedState === 1) {
-            // console.log('paused')
-            // actual puased state
-            // this.display.renderPaused(this.messages, this.score);
+            // paused state
             this.renderPausedMessages();
 
         } else if (this.pausedState === -1) {
-            // game play state
-            // console.log('play')
+            // playing state
             this.renderWords();
             this.display.renderScore(this.score - this.scoreBeforeRound, this.scoreNeeded);
-            // this.display.renderScoreNeeded(this.scoreNeeded);
             this.display.renderLevel(this.level);
             this.display.renderTimer(this.timer.secondsRemaining);
         } else {
-            // console.log('pre');
+            // this is the pre-round state
             this.display.renderTimer(this.timer.secondsRemaining);
             this.display.renderMessage(this.preRoundMsg);
         }
         
+        // loop 
         requestAnimationFrame(this.render);
     }
 
     init = () => {
+        // Initialize the game
+
         this.display.init(); // create all elements
         this.addKeyboardEventListener();
         this.initPausedMessages();
-        // this.startNewLevel();
-        // this.display.setLayout(this.paused);
-        // this.display.startButton.addEventListener('click', this.startNewLevel) // add start round to temporary button
-        // console.log(this.words);
-        // this.bubbleMachine = new BubbleMachine(1500);
-        // initAudio();
-        // this.bubbleMachine.start();
-        // this.bubbleMachine.words.push(new Word(WORDLIST[Math.floor(Math.random() * WORDLIST.length)]));
         this.render();
     }
 

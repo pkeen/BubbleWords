@@ -10,11 +10,6 @@ class Display {
 
      /* Create game DOM elements
         All DOM elements will be created on initialization
-        They will be placed in two separate Divs
-            1. representing in in play state
-            2. representing a paused state
-            These element can then be displayed and undisplayed based on game state
-
     */
 
     createGameCanvas= () => {
@@ -25,110 +20,15 @@ class Display {
         this.gameCanvas.setAttribute('id', 'game');
         this.parentElement.append(this.gameCanvas);
     }
-
-    // createPausedElement = () => {
-    //     this.pausedElement = document.createElement('div');
-    //     this.pausedElement.setAttribute('id', 'paused');
-    //     this.parentElement.append(this.pausedElement);
-    // }
-        
-    // createPausedMessageElement = () => {
-    //     this.pausedMessageDiv = document.createElement('div');
-    //     this.mainPausedMessage = document.createElement('h1');
-    //     this.subPausedMessage = document.createElement('h3');
-    //     this.continueMessage = document.createElement('h4');
-    //     this.continueMessage.setAttribute('id', 'continue');
-       
-    //     this.pausedMessageDiv.append(this.mainPausedMessage, this.subPausedMessage, this.continueMessage);
-    //     this.pausedElement.append(this.pausedMessageDiv); // belongs in paused element
-    // }
-
-    // createHeaderElement = () => {
-    //     this.headerElement = document.createElement('div');
-    //     this.headerElement.setAttribute('id', 'header');
-    //     this.levelElement = document.createElement('div');
-    //     this.scoreElement = document.createElement('div');
-    //     this.headerElement.append(this.levelElement, this.scoreElement);
-    //     this.gameElement.append(this.headerElement);
-    // }
-
-    // createTimerElement = () => {
-    //     this.timerElement = document.createElement('div');
-    //     this.timerElement.setAttribute('id', 'timer');
-    //     this.gameElement.append(this.timerElement);
-    // }
-
-    // createTargetWordElement = () => {
-    //     this.targetElement = document.createElement('div');
-    //     this.targetElement.setAttribute('id', 'target');
-    //     this.promptElement = document.createElement('p');
-    //     this.promptElement.innerHTML = `--- TYPE THE WORD BELOW ---`;
-    //     this.targetWordElement = document.createElement('h3');
-    //     this.targetElement.append(this.promptElement, this.targetWordElement);
-    //     this.gameElement.append(this.targetElement);
-    // }
-
-    // // createTypingDisplayElement = () => {
-    // //     this.typingDisplayElement = document.createElement('div');
-    // //     this.typingDisplayElement.setAttribute('id', 'typing');
-    // //     this.typingTextElement = document.createElement('h3');
-    // //     this.cursorElement = document.createElement('div');
-    // //     this.typingDisplayElement.append(this.typingTextElement, this.cursorElement);
-    // //     this.gameElement.append(this.typingDisplayElement);
-    // // }
-
-
-    // //  /* Render methods for elements */
-
-    // renderHeader = (level, score) => {
-    //     this.levelElement.innerHTML = `<p>Level: ${level}</p>`
-    //     this.scoreElement.innerHTML = `<p>Score: ${score}</p>`;
-    // }
-
-    // // render correct in span
-    // renderTargetWord = (target, correctlyTyped) => {
-    //     let renderTarget = ``;
-
-    //     for (let i = 0; i < target.length; i++) {
-    //         if (target[i] === correctlyTyped[i]) {
-    //             renderTarget += `<span>${target[i]}</span>`
-    //         } else {
-    //             renderTarget += target[i];
-    //         }
-    //     }
-    //     // console.log(`rendertarget= ${renderTarget}`);
-    //     this.targetWordElement.innerHTML = `${renderTarget}`;
-    // }
-
-    // // // render the typing on screen
-    // // renderTyping = (correctlyTyped) => {
-    // //     this.typingTextElement.innerHTML = correctlyTyped;
-    // // }
-    
-    // renderPausedMessage = (score) => {
-    //     if (score > 0) {
-    //         this.mainPausedMessage.innerHTML = `You scored ${score} points!`;
-    //     } else {
-    //         this.mainPausedMessage.innerHTML = `Welcome to TikType`
-    //     }
-    //     this.continueMessage.innerHTML = `Press the spacebar to ${score ? 'continue' : 'begin'}`
-    // }
-
-    setLayout = (paused) => {
-        if (paused === true) {
-            this.pausedElement.style.display = 'flex';
-            this.gameCanvas.style.display = 'none';
-        } else {
-            this.gameCanvas.style.display = 'block';
-            this.pausedElement.style.display = 'none';
-        }
-    }
     
      
     renderWordColors = (word, x, y) => {
+        // This function colors the words as they appear on the screen
+        // White is default and a greenish color for the characters correctly typed
 
-        this.ctx.textAlign = 'left'; // align text left
+        this.ctx.textAlign = 'left'; // align text left, needed for the way this works
 
+        // word characters are checked against those held in correctlyTyped
         for (let i = 0; i < word.text.length; i++) {
             if (word.text[i] === word.correctlyTyped[i]) {
                 this.ctx.fillStyle = '#1BF9A9';
@@ -137,11 +37,14 @@ class Display {
                 this.ctx.fillStyle = "white";
                 this.ctx.fillText(word.text[i], x, y);
             }
+            // The width of the character is measured and added to the current x position to align characters
             x += this.ctx.measureText(word.text[i]).width;
         }
     }
 
+
     lerp = (a, b, alpha) => {
+        // Math function to interpolate between two vales based on the alpha (a number between 0 and 1)
         return a + alpha * (b - a);
     }
     
@@ -158,6 +61,8 @@ class Display {
     }
 
     adjustToFit = (x, y, bubbleRadius) => {
+        // This function confines the word bubbles to within the canvas
+            // In amother version I would like not to contain them, but let them float away and be removed from the words array
 
         const rightBoundary = x + bubbleRadius
         const leftBoundary = x - bubbleRadius
@@ -182,6 +87,8 @@ class Display {
     }
 
     drawBubbleWord = (word, x, y) => {
+        // function to draw the bubble words
+        // uses the size of the text to calculate values for outer circle and text position
 
         this.ctx.font = "30px Arial";
 
@@ -192,6 +99,7 @@ class Display {
         [x, y] = this.adjustToFit(x, y, bubbleRadius);
 
         this.ctx.strokeStyle = "white";
+
         // draw outer circle
         this.ctx.beginPath();
         this.ctx.arc(x, y, bubbleRadius, 0, Math.PI * 2);
@@ -209,6 +117,7 @@ class Display {
     }
 
     renderBubbleWord = (word) => {
+        // middleman - recives the words from the game and passes to drawBubbleWord
 
         this.drawBubbleWord(
             word, 
@@ -218,8 +127,8 @@ class Display {
 
     }
     
-    // Format the time
     formatTime = (secondsRemaining) => {
+        // Format the time
         const seconds = secondsRemaining % 60;
         const minutes = Math.floor(secondsRemaining / 60);
         return `${minutes} : ${seconds < 10 ? '0' : ''}${seconds}`;
@@ -237,7 +146,7 @@ class Display {
 
 
     renderScore = (score, scoreNeeded) => {
-
+        // render the score
         this.ctx.font = "20px Arial";
         const text = `Score: ${score}`;
         const textWidth = this.ctx.measureText(text).width;
@@ -253,16 +162,8 @@ class Display {
         this.ctx.fillText(text, x - textWidth / 2, 50);
     }
 
-    // renderScoreNeeded = (scoreNeeded) => {
-    //     this.ctx.font = "20px Arial";
-    //     const text = `Needed: ${scoreNeeded}`;
-    //     const textWidth = this.ctx.measureText(text).width;
-    //     const x = this.gameCanvas.width * 0.2;
-    //     this.ctx.fillStyle = this.primaryColor;
-    //     this.ctx.fillText(text, x - textWidth / 2, 70);
-    // }
-
     renderLevel = (level) => {
+        // render current level
         this.ctx.font = "20px Arial";
         const text = `Level: ${level}`;
         const textWidth = this.ctx.measureText(text).width;
@@ -270,45 +171,6 @@ class Display {
         this.ctx.fillStyle = this.primaryColor;
         this.ctx.fillText(text, x - textWidth / 2, 50);
     }
-
-    // renderPaused = (score) => {
-    
-    //     if (score) {
-    //         this.mainMsg.text = `You scored ${score}!`;
-    //         this.subMsg.text = `Hit space to continue`;
-    //     } else {
-    //         this.mainMsg.text = 'Welcome to Bubble World';
-    //         this.subMsg.text = `Hit space to begin`;
-    //     }
-
-    //     // render main message in center
-    //     this.ctx.font = "48px Arial";
-    //     this.ctx.fillStyle = 'white';
-    //     this.ctx.textAlign = "center";
-    //     this.ctx.fillText(this.mainMsg.text, this.gameCanvas.width / 2, this.gameCanvas.height / 2);
-
-    //     // render sub message moving
-    //     this.ctx.font = "30px Arial";
-    //     this.ctx.fillStyle = this.primaryColor;
-    //     this.ctx.fillText(this.subMsg.text, this.gameCanvas.width / 2, this.gameCanvas.height / 2 + 50);
-
-    // }
-
-    // renderPaused = (messages, score) => {
-    //     if (score) {
-    //         messages.main.text = 'You score ${score}';
-    //         messages.sub.text = `Hit space to continue`;
-    //     } else {
-    //         messages.main.text = 'Welcome to Bubble World';
-    //         messages.sub.text = "Hit space to begin";
-    //     }
-
-    //     // render main message 
-    //     this.ctx.font = "48px Arial";
-    //     this.ctx.fillStyle = 'white';
-    //     this.ctx.textAlign = "center";
-    //     this.ctx.fillText(messages.main.text, messages.main.position.from.x, messages.main.position.from.y);
-    // }
 
     renderMessage = (msg) => {
 
@@ -321,14 +183,8 @@ class Display {
     }
 
     init = () => {
-        // this.createTemporaryButton();
+        // create the canvas element
         this.createGameCanvas();
-        // this.createPausedElement();
-        // this.createPausedMessageElement();
-        // this.createHeaderElement();
-        // this.createTimerElement();
-        // this.createTargetWordElement();
-        // this.createTypingDisplayElement();
     }
 
 }

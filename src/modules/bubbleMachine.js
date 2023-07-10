@@ -3,9 +3,13 @@ import WORDLIST from './wordList.js';
 
 class BubbleMachine {
 
+    /*
+        This class produces the bubbles and contains the array of words for the game
+        Uses a similar structure to the timer, by repeating a timeout function based on the interval provided
+    */
+
     constructor(interval) {
-        this.interval = interval;
-        // this.callBack = callBack;
+        this.interval = interval; // The interval at which to spit out more bubbles
         this.words = [];
     }
 
@@ -32,27 +36,21 @@ class BubbleMachine {
             this.createRandomBubbles();
         }
         
-        // Function for different animation values of innner circle ?
-        // LERP
-        // this.redirectBubbles();
-        // console.log(this.words.length);
-        
         // repeat
         this.timeout = setTimeout(this.repeat, this.interval - drift);
         
     }
     
     createRandomBubbles = () => {
+        // This creates the bubbles
         const maxBubbles = 3;
         const minBubbles = 1;
         let numBubbles = Math.floor(Math.random() * (maxBubbles - minBubbles) + minBubbles);
         for (let i = 0; i < numBubbles; i++) {
-            // this.callBack();
             const newWord = new Word(WORDLIST[Math.floor(Math.random() * WORDLIST.length)])
             newWord.initPosition();
             this.words.push(newWord);
         }
-        // console.log(this.words);
 
     }
 
