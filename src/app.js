@@ -1,6 +1,6 @@
 import Game from "./modules/game.js";
 
-import { sfx } from "./modules/audio.js"; 
+import { sfx } from "../assets/audio.js"; 
 
 const appElement = document.getElementById('app');
 

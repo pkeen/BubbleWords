@@ -1,4 +1,4 @@
-import { sfx } from "./audio.js";
+import { sfx } from "../../assets/audio.js";
 
 // import {audio, audioCtx} from "./audio.js";
 
@@ -58,7 +58,7 @@ class CountdownTimer {
     }
   
     // these functions were for rendering in the DOM, but I moved the rendering functionality to display
-    
+
     // // Format the time
     // formatTime = () => {
     //   const seconds = this.secondsRemaining % 60;

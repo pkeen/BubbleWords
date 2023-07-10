@@ -3,7 +3,7 @@ import CountdownTimer from "./CountdownTimer.js";
 import BubbleMachine from "./bubbleMachine.js";
 import Message from "./message.js";
 import Position from "./position.js";
-import {sfx} from './audio.js';
+import {sfx} from '../../assets/audio.js';
 
 class Game {
 
