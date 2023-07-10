@@ -2,7 +2,7 @@
 
 const sfx = {
     tick: new Howl({
-        src: './BubbelWords/assets/tick-1.wav',
+        src: './BubbleWords/assets/tick-1.wav',
         volume: 0.2
     }),
     pop1: new Howl({
