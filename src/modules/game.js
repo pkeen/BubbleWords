@@ -124,10 +124,10 @@ class Game {
         this.pausedState = 1;
         // console.log(this.score - this.scoreBeforeRound)
 
-        // Set the paused state messages to show
-        if ((this.score - this.scoreBeforeRound) >= this.scoreNeeded) {
+        // Return to beggining if score not reached
+        if ((this.score - this.scoreBeforeRound) < this.scoreNeeded) {
             // this.level++;
-            this.setPausedMessages();
+            this.level = 0;
         }
 
         // reset the position of second paused message
