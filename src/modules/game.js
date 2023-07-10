@@ -129,6 +129,7 @@ class Game {
     timeUp = () => {
         this.pausedState = 1;
         // console.log(this.score - this.scoreBeforeRound)
+        console.log('timeup');
 
         // Return to beggining if score not reached
         if ((this.score - this.scoreBeforeRound) < this.scoreNeeded) {
@@ -172,14 +173,10 @@ class Game {
         this.timer.start();
         this.bubbleMachine.start();
         sfx.music.play();
-        // console.log('start game');
       
     }
 
     startNewLevel = () => {
-        if (this.timer) {
-            this.timer.stop();
-        }
         this.scoreNeeded = this.level * 100 + 1000;
         this.scoreBeforeRound = this.score;
         this.setPreRoundMessage();
@@ -277,6 +274,9 @@ class Game {
     }
 
     render = () => {
+
+        // Main Animation Loop
+
         this.display.ctx.clearRect(0, 0, this.display.gameCanvas.width, this.display.gameCanvas.height);  // clear function
         // this.display.setLayout(this.paused);
         if (this.pausedState === 1) {
@@ -298,10 +298,7 @@ class Game {
             this.display.renderTimer(this.timer.secondsRemaining);
             this.display.renderMessage(this.preRoundMsg);
         }
-        // this.display.renderTimer(this.timer.secondsRemaining);
-        // this.display.renderOtherThing();
-        // this.display.renderTargetWord(this.wordOne);
-        // this.wordOne.y += this.wordOne.speed / 10;
+        
         requestAnimationFrame(this.render);
     }
 
