@@ -17,7 +17,6 @@ class BubbleMachine {
         this.expected = Date.now() + this.interval;
         this.createRandomBubbles();
         this.timeout = setTimeout(this.repeat, this.interval);
-        console.log(this.words.length)
     }
     
     stop = () => {

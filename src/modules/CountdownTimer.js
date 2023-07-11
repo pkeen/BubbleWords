@@ -45,7 +45,6 @@ class CountdownTimer {
         
         this.expected += this.timeInterval;
         this.secondsRemaining--;
-        console.log(this.secondsRemaining); // testing
         // this.render();
         
         if (this.secondsRemaining <= 0) {

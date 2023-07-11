@@ -66,7 +66,7 @@ class Game {
           // If paused we're only listening for the space key
           if (this.pausedState === 1) {
               if(event.code === 'Space') {
-                  console.log('space key')
+                // start new level on space key from paused
                   this.startNewLevel();
               }
           } else {
@@ -238,13 +238,12 @@ class Game {
     }
 
     setPausedMessages = () => {
-        console.log(this.score);
+        // Logic for setting what appears in game paused screen
         if (this.score) {
             this.pausedMessages[0].text = `Total score ${this.score}`;
             if (this.pausedMessages[2]) {
                 this.pausedMessages[2].text = `You needed ${this.scoreNeeded} and you scored ${this.score - this.scoreBeforeRound}`
             } else {
-                console.log(this.scoreNeeded);
                 this.pausedMessages.push({
                     text: `You needed ${this.scoreNeeded} and you scored ${this.score - this.scoreBeforeRound}`,
                     fillStyle: '#83D2F3',
@@ -276,7 +275,7 @@ class Game {
                 ))
             }
 
-            if (this.score - this.scoreBeforeRound > this.scoreNeeded) {
+            if (this.score - this.scoreBeforeRound >= this.scoreNeeded) {
                 this.pausedMessages[1].text = "Hit space to continue";
                 this.pausedMessages[3].text = "Nicely done!"
             } else {
